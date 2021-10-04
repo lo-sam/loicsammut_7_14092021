@@ -1,6 +1,6 @@
   // Imports
   const models = require('../models');
-  const asyncLib = require('async');
+  //const asyncLib = require('async');
   const jwtUtils = require('../utils/jwt.utils');
 
   // Constants
@@ -17,58 +17,78 @@
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
           // Params
-          const title = req.body.title;
-          const content = req.body.content;
 
-          if (title == null || content == null) {
-              return res.status(400).json({ 'error': 'Tous les champs doivent être remplis!' })
-          }
 
-          if (title.length <= TITLE_LIMIT || content.length <= CONTENT_LIMIT) {
-              return res.status(400).json({ 'error': 'le titre doit faire min 2 caractères et le message min 4 caractères!' })
-          }
+          const message = {
+              title: req.body.title,
+              content: req.body.content,
+              UserId: userId,
+              // attache: req.body.content && req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
+          };
 
-          asyncLib.waterfall([
-                  function(done) {
-                      //récupération de l'identifiant
-                      models.User.findOne({
-                              where: { id: userId }
-                          })
-                          //si l'identifiant est présent dans la base
-                          .then(function(userFound) {
-                              done(null, userFound);
+          models.Message.create(message)
 
-                          })
-                          //si il ne l est pas
-                          .catch(function(err) {
-                              return res.status(500).json({ 'error': 'Impossible de vérifier l\' utilisateur!' });
-                          });
-                  },
-                  function(userFound, done) {
-                      //si l utilisateur existe
-                      if (userFound) {
-                          models.Message.create({
-                                  title: title,
-                                  content: content,
-                                  likes: 0,
-                                  UserId: 1 //userFound.id //relation message -> identifiant
-                              })
-                              .then(function(newMessage) {
-                                  done(newMessage);
-                              });
-                      } else {
-                          res.status(404).json({ 'error': 'L\'utilisateur n\' existe pas!' })
-                      }
-                  },
-              ],
-              function(newMessage) {
-                  if (newMessage) {
-                      return res.status(201).json(newMessage); //message posté
-                  } else {
-                      return res.status(500).json({ 'error': 'Le message n\'a pas été posté' });
-                  }
+          .then(() => res.status(201).json({ message: 'message enregistré !' }))
+              .catch(function(err) {
+                  res.status(500).json({ message: 'probleme  au niveau du serveur' });
+                  console.log(err);
               });
       },
+
+
+
+      /*
+
+
+                if (title == null || content == null) {
+                    return res.status(400).json({ 'error': 'Tous les champs doivent être remplis!' })
+                }
+
+                if (title.length <= TITLE_LIMIT || content.length <= CONTENT_LIMIT) {
+                    return res.status(400).json({ 'error': 'le titre doit faire min 2 caractères et le message min 4 caractères!' })
+                }
+
+                asyncLib.waterfall([
+                        function(done) {
+                            //récupération de l'identifiant
+                            models.User.findOne({
+                                    where: { id: userId }
+                                })
+                                //si l'identifiant est présent dans la base
+                                .then(function(userFound) {
+                                    done(null, userFound);
+
+                                })
+                                //si il ne l est pas
+                                .catch(function(err) {
+                                    return res.status(500).json({ 'error': 'Impossible de vérifier l\' utilisateur!' });
+                                });
+                        },
+                        function(userFound, done) {
+                            //si l utilisateur existe
+                            if (userFound) {
+                                models.Message.create({
+                                        title: title,
+                                        content: content,
+                                        likes: 0,
+                                        userId: userFound.id //relation message -> identifiant
+                                    })
+                                    .then(function(newMessage) {
+                                        done(newMessage);
+                                    });
+                            } else {
+                                res.status(404).json({ 'error': 'L\'utilisateur n\' existe pas!' })
+                            }
+                        },
+                    ],
+                    function(newMessage) {
+                        if (newMessage) {
+                            return res.status(201).json(newMessage); //message posté
+                        } else {
+                            return res.status(500).json({ 'error': 'Le message n\'a pas été posté' });
+                        }
+                    });
+            },*/
       listMessages: function(req, res) {
           let fields = req.query.fields; //champs à afficher
           let limit = parseInt(req.query.limit); //segmentation de la récupération des messages
@@ -101,4 +121,4 @@
               res.status(500).json({ "error": 'Champs invalides!' })
           });
       }
-  }
+  };
