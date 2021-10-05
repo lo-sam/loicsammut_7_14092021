@@ -1,8 +1,9 @@
 const home = {
     template: `<p>page d'accueil</p>
     <div id="message">
+    <button v-on:click='affMessage()'> message </button>
         <ul>
-            <li v-for="message in messages">{{message}}</li>
+            <li v-for="message in messages">{{message.content}}</li>
         </ul>
     </div>`,
     name: 'HOME'
@@ -49,28 +50,22 @@ const router = new VueRouter({
     ]
 })
 
-
-const vue = new Vue({
-    router
-}).$mount('#app');
-/*
-<script>
-const app = new Vue({
-    el: '#app',
+//test GET
+const message = new VueMess({
+    el: '#message',
     data: {
-
+        messages: []
     },
     methods: {
-        inscription() {
-            axios.post('http://localhost:8080/api/users/register'), {
-                    email: req.body.email,
-                    username: req.body.username,
-                    password: req.body.pass,
-                    bio: req.body.bio
-                }
-                .then(response => console.log(response))
-                .catch(err => console.log("Impossible d'envoyer les données"));
+        affMessage() {
+            axios.get('http://localhost:8080/api/messages')
+                .then(response => this.messages = response.data)
+                .catch(err => console.log(err));
         }
     }
-})
-</script>*/
+}).$mont('#message');
+
+const vue = new Vue({
+    router,
+    message
+}).$mount('#app');
