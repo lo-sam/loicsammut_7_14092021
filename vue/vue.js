@@ -1,5 +1,10 @@
 const home = {
-    template: `<p>page d'accueil</p>`,
+    template: `<p>page d'accueil</p>
+    <div id="message">
+        <ul>
+            <li v-for="message in messages">{{message}}</li>
+        </ul>
+    </div>`,
     name: 'HOME'
 }
 
