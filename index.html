@@ -5,49 +5,44 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="icon" href="img/favicon.ico">
+    <script src="https://kit.fontawesome.com/a650986bb4.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Groupomania</title>
 </head>
 
 <body>
 
-    <div id="app">
-        <div id="enTete">
-            <div id="inscrip">
-                <input type="mail" id="email"><label for="email">E-mail</label>
-                <input type="text" id="username"><label for="username">Nom d'utilisateur</label>
-                <input type="text" id="pass"><label for="pass">Password</label>
-                <input type="text" id="bio"><label for="bio">Bio</label>
-
-                <button v-on:click="inscription()">s'inscrire</button>
-            </div>
-            <br>
-            <button v-on:click="connexion()">se connecter</button>
-
+    <main>
+        <div id="app">
+            <nav>
+                <router-link to="/">
+                    <div id="corp">
+                        <img id="logo" src="img/icon.png" alt="logo Groupomania">
+                        <h1>Groupomania</h1>
+                    </div>
+                </router-link>
+                <ul id="burger">
+                    <li id="ico_user"><i class="far fa-user"></i></li>
+                    <li id="ico_cross"><i class="fas fa-times"></i></li>
+                    <ul class="sub">
+                        <router-link to="/users/login">
+                            <li>CONNEXION</li>
+                        </router-link>
+                        <router-link to="/users/register">
+                            <li>INSCRIPTION</li>
+                        </router-link>
+                    </ul>
+                </ul>
+            </nav>
+            <router-view></router-view>
         </div>
-    </div>
-
-    <script>
-        const app = new Vue({
-            el: '#app',
-            data: {
-
-            },
-            methods: {
-                inscription() {
-                    axios.post('http://localhost:8080/api/users/register'), {
-                            email: req.body.email,
-                            username: req.body.username,
-                            password: req.body.pass,
-                            bio: req.body.bio
-                        }
-                        .then(response => console.log(response))
-                        .catch(err => console.log("Impossible d'envoyer les données"));
-                }
-            }
-        })
-    </script>
+    </main>
+    <footer></footer>
+    <script src="./vue/vue.js"></script>
 
 </body>
 

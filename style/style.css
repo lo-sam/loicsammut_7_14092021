@@ -1,0 +1,160 @@
+body {
+    background-color: #FFD7D7;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+a {
+    text-decoration: none;
+}
+
+main {
+    width: 1200px;
+    margin: auto;
+    background-color: #fff;
+}
+
+nav {
+    display: flex;
+}
+
+#corp {
+    display: flex;
+}
+
+#logo {
+    width: 113px;
+    height: fit-content;
+}
+
+h1 {
+    font-size: 40px;
+    text-transform: uppercase;
+    color: #FD2D01;
+}
+
+#burger {
+    margin-left: auto;
+    position: relative;
+    padding: 0;
+    list-style: none;
+}
+
+#ico_user,
+#ico_cross {
+    font-size: 40px;
+    color: #FD2D01;
+    margin: 30px;
+}
+
+#ico_cross {
+    display: none;
+}
+
+#burger:hover #ico_user {
+    display: none;
+}
+
+#burger:hover #ico_cross {
+    display: block;
+}
+
+.sub li {
+    list-style: none;
+    display: block;
+    padding: 20px;
+    color: #FD2D01;
+    cursor: pointer;
+}
+
+.sub {
+    display: none;
+    position: absolute;
+    border-radius: 10% 0 10% 10%;
+}
+
+#burger:hover .sub {
+    display: inline-block;
+    padding: 0;
+    left: -100%;
+    top: 70px;
+    background-color: #FFD7D7;
+}
+
+#inscrip,
+#connex {
+    margin: 50px auto;
+    width: 30%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFD7D7;
+    border-radius: 5%;
+    color: #FD2D01;
+    font-size: 20px;
+}
+
+#inscrip label,
+#connex label {
+    margin: auto;
+    margin-bottom: 5px;
+}
+
+#inscrip input,
+#connex input {
+    max-width: 70%;
+    height: 30px;
+    font-size: 20px;
+    margin: auto;
+    margin-bottom: 20px;
+    border: #FFD7D7;
+    border-radius: 10px;
+}
+
+#inscrip input:focus,
+#connex input:focus {
+    outline-color: #fff;
+}
+
+#btn_inscrip,
+#btn_connex {
+    margin: 30px auto;
+    position: relative;
+    display: inline-block;
+    padding: 15px 30px;
+    text-decoration: none;
+    overflow: hidden;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+#btn_inscrip span,
+#btn_connex span {
+    position: absolute;
+    display: block;
+}
+
+#btn_inscrip:hover,
+#btn_connex:hover {
+    color: #FFD7D7;
+    background-color: #FD2D01;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #FD2D01, 0 0 40px #FD2D01, 0 0 80px #FD2D01;
+    transition: 1s;
+    transition-delay: 0.1s;
+}
+
+button,
+input[type="submit"],
+input[type="reset"] {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
