@@ -1,11 +1,8 @@
 const home = {
-    template: `<p>page d'accueil</p>
-    <div id="message">
-    <button v-on:click='affMessage()'> message </button>
-        <ul>
-            <li v-for="message in messages">{{message.content}}</li>
-        </ul>
-    </div>`,
+    template: `
+    <p>
+        page d'accueil
+    </p>`,
     name: 'HOME'
 }
 
@@ -50,6 +47,7 @@ const router = new VueRouter({
     ]
 })
 
+/*
 //test GET
 const message = new VueMess({
     el: '#message',
@@ -63,9 +61,8 @@ const message = new VueMess({
                 .catch(err => console.log(err));
         }
     }
-}).$mont('#message');
+}).$mont('#message');*/
 
 const vue = new Vue({
-    router,
-    message
+    router
 }).$mount('#app');
