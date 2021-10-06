@@ -35,6 +35,12 @@ export default{
       bio:''
     }
   },
+  mounted: function(){
+    if(this.$store.state.user.userId !=-1){
+      this.$router.push('/PROFILE');
+      return;
+    }
+  },
   computed:{
     ...mapState(['status'])
   },

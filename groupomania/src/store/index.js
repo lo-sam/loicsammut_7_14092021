@@ -46,6 +46,13 @@ const store = createStore({
         },
         userInfos: function(state, userInfos) {
             state.userInfos = userInfos;
+        },
+        deconnexion: function(state) {
+            state.user = {
+                userId: -1,
+                token: '',
+            }
+            localStorage.removeItem('user');
         }
     },
     actions: {
