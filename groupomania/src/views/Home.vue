@@ -6,7 +6,7 @@
       <p class="quest_compte" v-else>Vous avez déjà un compte?<span id="switchConnex" @click="switchCONNEXION()"> Se connecter</span></p>
       <input v-model="email" placeholder="E-mail" type="mail" id="email">
       <input v-model="username" v-if="mode=='INSCRIPTION'" placeholder="Nom" type="text" id="username">
-      <input v-model="password" placeholder="Mot de passe" type="text" id="password">
+      <input v-model="password" placeholder="Mot de passe" type="password" id="password">
       <input v-model="bio" v-if="mode=='INSCRIPTION'" placeholder="Poste" type="text" id="bio">
       <div class="err_connex" v-if="mode=='CONNEXION' && status=='error_login'">E-mail et/ou mot de passe incorrect</div>
       <button v-if="mode=='CONNEXION'" id="btn_connex" @click="connexion()">
@@ -51,19 +51,20 @@ export default{
         email: this.email,
         password:this.password,
       }).then(function(){
-        self.$router.push('/MESSAGES');
+        self.$router.push('/PROFILE');
       }).catch(function(err){
         console.log(err);
       })
     },
     inscription: function(){
+      const self=this;
       this.$store.dispatch('inscription',{
         email: this.email,
         username:this.username,
         password:this.password,
         bio:this.bio
-      }).then(function(response){
-        console.log(response);
+      }).then(function(){
+        self.connexion();
       }).catch(function(err){
         console.log(err);
       })

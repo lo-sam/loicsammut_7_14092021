@@ -12,12 +12,11 @@
             <li id="ico_user"><i class="far fa-user"></i></li>
             <li id="ico_cross"><i class="fas fa-times"></i></li>
             <ul class="sub">
-                <router-link to="/CONNEXION">
+               
                     <li>CONNEXION</li>
-                </router-link>
-                <router-link to="/INSCRIPTION">
+               
                     <li>INSCRIPTION</li>
-                </router-link>
+               
             </ul>
         </ul>
     </nav>
