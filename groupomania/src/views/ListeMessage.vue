@@ -1,5 +1,5 @@
 <template>
-    <h1>liste des messages</h1>
+    <h1>liste des messages<i class="far fa-comments"></i></h1>
 
 </template>
 

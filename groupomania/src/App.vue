@@ -1,129 +1,174 @@
 <template>
-<body>
-  <main>
-    <nav>
-        <router-link to="/">
-            <div id="corp">
-                <img id="logo" src="./assets/icon.png" alt="logo Groupomania">
-                <h1>Groupomania</h1>
-            </div>
+  <body>
+    <main>
+      <nav>
+        <router-link to="/MESSAGES">
+          <div id="corp">
+            <img id="logo" src="./assets/icon.png" alt="logo Groupomania" />
+            <h1>Groupomania</h1>
+          </div>
         </router-link>
-        <ul id="burger">
-            <li id="ico_user"><i class="far fa-user"></i></li>
-            <li id="ico_cross"><i class="fas fa-times"></i></li>
-            <ul class="sub">
-               
-                    <li>CONNEXION</li>
-               
-                    <li>INSCRIPTION</li>
-               
-            </ul>
-        </ul>
-    </nav>
-    <router-view></router-view> 
-  </main>
-</body>
+          <div id="user_menu">
+          Bonjour <span>{{user.username}}</span>
+          </div>
+        <div id="burger">
+          <span id="ico_menu"><i class="fas fa-bars"></i></span>
+          <ul class="sub">
+            <router-link to="/PROFILE">
+              <li id="ico_user"><i class="far fa-user"></i>PROFILE</li>
+            </router-link>
+            <router-link to="/">
+              <li id="ico_cross" @click="deconnexion">
+                <i class="fas fa-times"></i>DECONNEXION
+              </li>
+            </router-link>
+          </ul>
+        </div>
+      </nav>
+      <router-view></router-view>
+    </main>
+  </body>
 </template>
 
-<style>
+<script>
+import { mapState } from "vuex";
+export default {
+  name: "Profile",
+  mounted: function () {
+    console.log(this.$store.state.user);
+    if (this.$store.state.user.userId == -1) {
+      this.$router.push("/");
+      return;
+    }
+    this.$store.dispatch("getUserInfos");
+  },
+  computed: {
+    ...mapState({
+      user: "userInfos",
+    }),
+  },
+  methods: {
+    deconnexion: function () {
+      this.$store.commit("deconnexion");
+      this.$router.push("/");
+    },
+  },
+};
+</script>
 
+
+
+<style>
 * {
-  font-family: 'Poppins', sans-serif;
-  margin:0;
+  font-family: "Poppins", sans-serif;
+  margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 body {
-    background-color: #FFD7D7;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    min-height: auto;
+  background-color: #ffd7d7;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  min-height: auto;
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 main {
-    width: 1200px;
-    margin: auto;
+  width: 1200px;
+  margin: auto;
 }
 
 nav {
-    display: flex;
+  display: flex;
 }
 
 #corp {
-    display: flex;
+  display: flex;
 }
 
 #logo {
-    width: 60px;
-    margin: 9px 5% 0 5%;
-   height: fit-content;
+  width: 60px;
+  margin: 9px 5% 0 5%;
+  height: fit-content;
 }
 
 h1 {
-    font-size: 40px;
-    padding-top: 17px;
-    color: #000;
+  font-size: 40px;
+  padding-top: 17px;
+  color: #000;
 }
 
-#burger {
+#user_menu{
+    margin-left: 50%;
+    top: 24px;
     position: relative;
-    margin-left: auto;
-    padding: 0;
-    list-style: none;
-    height: 53px;
-    width: 44px;
-    top: 12px;
-    left: -39px;
+    font-size: 22px;
+    color: #fff;
+}
+#user_menu span{
+  color: #FD2D01;
+}
+#burger {
+  position: relative;
+  margin-left: auto;
+  padding: 0;
+  list-style: none;
+  height: 53px;
+  width: 44px;
+  top: 12px;
+  left: -39px;
+}
+#ico_menu {
+  position: relative;
+  font-size: 40px;
+  color: #fff;
+  margin: 30px;
+  top: 4px;
+  left: -25px;
 }
 
 #ico_user,
 #ico_cross {
-    position: relative;
-    font-size: 40px;
-    color: #fff;
-    margin: 30px;
-    top: -25px;
-    left: -25px;
+  position: relative;
+  font-size: 18px;
+  color: #fff;
 }
 
+#ico_user i,
+#ico_cross i {
+margin-right: 10px;
+}
 #ico_cross {
-    display: none;
-}
-
-#burger:hover #ico_user {
-    display: none;
+  display: none;
 }
 
 #burger:hover #ico_cross {
-    display: block;
+  display: block;
 }
 
 .sub li {
-    list-style: none;
-    display: block;
-    padding: 20px;
-    color: #fff;
-    cursor: pointer;
+  list-style: none;
+  display: block;
+  padding: 20px;
+  color: #fff;
+  cursor: pointer;
 }
 
 .sub {
-    display: none;
-    position: absolute;
-    border-radius: 10% 0 10% 10%;
+  display: none;
+  position: absolute;
+  border-radius: 10% 0 10% 10%;
 }
 
 #burger:hover .sub {
-    display: inline-block;
-    padding: 0;
-    left: -245%;
-    top: 45px;
-    background-color: #FFD7D7;
+  display: inline-block;
+  padding: 0;
+  left: -372%;
+  top: 45px;
+  background-color: #ffd7d7;
 }
-
-
 </style>

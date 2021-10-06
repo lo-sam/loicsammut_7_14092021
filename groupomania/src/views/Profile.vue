@@ -1,10 +1,9 @@
 <template>
 <div id="profile">
-    <h1>PROFILE</h1>
-    <p>Nom d'utilisateur: {{user.username}}</p>
-    <p>Adresse mail: {{user.email}}</p>
-    <p>Poste dans l'entreprise: {{user.bio}}</p>
-    <button @click="deconnexion">BOUTON DECONNEXION</button>
+    <span>Nom d'utilisateur: <p>{{user.username}}</p></span> 
+    <span>Adresse mail: <p>{{user.email}}</p></span>    
+    <span>Poste dans l'entreprise: <p>{{user.bio}}</p></span> 
+    <button>MODIFER</button>
 </div>
 </template>
 
@@ -33,3 +32,28 @@ export default{
         }
 }
 </script>
+
+<style>
+#profile {
+    margin: 50px auto;
+    width: 50%;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 10px;
+    color: #FFD7D7;
+    font-size: 20px;
+}
+#profile span{
+    display: flex;
+    margin: 10px;
+}
+#profile p{
+    color: #fd2d01;
+    margin-left: 5px;
+}
+#profile button{
+    margin: 30px;
+}
+</style>
