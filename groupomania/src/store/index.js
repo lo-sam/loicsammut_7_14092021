@@ -6,6 +6,7 @@ const instance = axios.create({
 });
 
 let user = localStorage.getItem('user');
+
 if (!user) {
     user = {
         userId: -1,
@@ -34,6 +35,12 @@ const store = createStore({
             email: '',
             bio: ''
         },
+        listeMessage: {
+            title: '',
+            content: '',
+            attachment: '',
+            likes: ''
+        }
     },
     mutations: {
         setStatus: function(state, status) {
@@ -46,6 +53,9 @@ const store = createStore({
         },
         userInfos: function(state, userInfos) {
             state.userInfos = userInfos;
+        },
+        listeMessage: function(state, listeMessage) {
+            state.listeMessage = listeMessage;
         },
         deconnexion: function(state) {
             state.user = {
@@ -89,7 +99,15 @@ const store = createStore({
                     commit('userInfos', response.data);
                 })
                 .catch(function() {});
+        },
+        getListeMessage: ({ commit }) => {
+            instance.get('/messages')
+                .then(function(response) {
+                    commit('listeMessage', response.data);
+                })
+                .catch(function() {});
         }
+
     }
 })
 

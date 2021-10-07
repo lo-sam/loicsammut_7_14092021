@@ -12,7 +12,6 @@ import {mapState}from 'vuex'
 export default{
         name:'Profile',
         mounted:function(){
-            console.log(this.$store.state.user);
             if(this.$store.state.user.userId == -1){
                 this.$router.push('/');
                 return;
@@ -40,10 +39,11 @@ export default{
     padding: 30px;
     display: flex;
     flex-direction: column;
-    background-color: #fff;
-    border-radius: 10px;
-    color: #FFD7D7;
     font-size: 20px;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 3px solid #fd2d01;
+    color: #000;
 }
 #profile span{
     display: flex;

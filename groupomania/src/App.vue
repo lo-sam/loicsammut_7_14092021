@@ -35,7 +35,6 @@ import { mapState } from "vuex";
 export default {
   name: "Profile",
   mounted: function () {
-    console.log(this.$store.state.user);
     if (this.$store.state.user.userId == -1) {
       this.$router.push("/");
       return;
@@ -45,6 +44,7 @@ export default {
   computed: {
     ...mapState({
       user: "userInfos",
+      message:"listeMessage",
     }),
   },
   methods: {
@@ -66,7 +66,8 @@ export default {
   box-sizing: border-box;
 }
 body {
-  background-color: #ffd7d7;
+  background-color: #fff;
+  color: #000;
   justify-content: center;
   align-items: center;
   display: flex;
@@ -107,7 +108,7 @@ h1 {
     top: 24px;
     position: relative;
     font-size: 22px;
-    color: #fff;
+    color: #000;
 }
 #user_menu span{
   color: #FD2D01;
@@ -125,7 +126,7 @@ h1 {
 #ico_menu {
   position: relative;
   font-size: 40px;
-  color: #fff;
+  color: #000;
   margin: 30px;
   top: 4px;
   left: -25px;
@@ -135,7 +136,7 @@ h1 {
 #ico_cross {
   position: relative;
   font-size: 18px;
-  color: #fff;
+  color: #000;
 }
 
 #ico_user i,
@@ -154,7 +155,7 @@ margin-right: 10px;
   list-style: none;
   display: block;
   padding: 20px;
-  color: #fff;
+  color: #000;
   cursor: pointer;
 }
 
@@ -169,6 +170,7 @@ margin-right: 10px;
   padding: 0;
   left: -372%;
   top: 45px;
-  background-color: #ffd7d7;
+  color: #000;
+  border: 3px solid #FD2D01;
 }
 </style>
