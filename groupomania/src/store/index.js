@@ -106,7 +106,21 @@ const store = createStore({
                     commit('listeMessage', response.data);
                 })
                 .catch(function() {});
-        }
+        },
+        message: ({ commit }, listeMessage) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.post('/messages/new', listeMessage)
+                    .then(function(response) {
+                        commit('setStatus', 'created');
+                        resolve(response);
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
+                    });
+            })
+        },
+
 
     }
 })

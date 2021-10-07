@@ -8,14 +8,17 @@
             <h1>Groupomania</h1>
           </div>
         </router-link>
-          <div id="user_menu">
+          <div  v-if='user.username' id="user_menu">
           Bonjour <span>{{user.username}}</span>
           </div>
-        <div id="burger">
+        <div v-if='user.username' id="burger">
           <span id="ico_menu"><i class="fas fa-bars"></i></span>
           <ul class="sub">
             <router-link to="/PROFILE">
               <li id="ico_user"><i class="far fa-user"></i>PROFILE</li>
+            </router-link>
+            <router-link to="/MESSAGES">
+              <li id="ico_mess"><i class="far fa-comments"></i>MESSAGES</li>
             </router-link>
             <router-link to="/">
               <li id="ico_cross" @click="deconnexion">
@@ -140,15 +143,28 @@ h1 {
 }
 
 #ico_user i,
-#ico_cross i {
+#ico_cross i,
+#ico_mess i {
 margin-right: 10px;
 }
-#ico_cross {
-  display: none;
+
+#ico_user{
+border-radius: 10px 0 0 0;
 }
 
-#burger:hover #ico_cross {
-  display: block;
+#ico_cross {
+  border-radius:  0 0 10px 10px;
+}
+
+#ico_mess {
+  border-radius:  0;
+}
+
+
+.sub {
+  display: none;
+  position: absolute;
+  border-radius: 10px 0 10px 10px;
 }
 
 .sub li {
@@ -157,12 +173,12 @@ margin-right: 10px;
   padding: 20px;
   color: #000;
   cursor: pointer;
+  background-color: #fff;
+  border-radius: 5px;
 }
 
-.sub {
-  display: none;
-  position: absolute;
-  border-radius: 10% 0 10% 10%;
+.sub li i{
+  color: #FD2D01;
 }
 
 #burger:hover .sub {
