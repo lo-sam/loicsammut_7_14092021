@@ -15,10 +15,11 @@
         </span>
     </p>
     <input v-model="email" placeholder="E-mail" type="mail" id="email" />
-    <span id="nom_poste">  
+    <span id="nom_prenom">  
+      <input v-model="userlastname" v-if="mode == 'INSCRIPTION'" placeholder="Prénom" type="text" id="userlastname"/>
       <input v-model="username" v-if="mode == 'INSCRIPTION'" placeholder="Nom" type="text" id="username"/>
-      <input v-model="bio" v-if="mode == 'INSCRIPTION'" placeholder="Poste" type="text" id="bio"/>
     </span>
+    <input v-model="bio" v-if="mode == 'INSCRIPTION'" placeholder="Poste" type="text" id="bio"/>
     <input v-model="password" placeholder="Mot de passe" type="password" id="password"/>
     <div class="err_connex" v-if="mode == 'CONNEXION' && status == 'error_login'">
       E-mail et/ou mot de passe incorrect
@@ -44,8 +45,10 @@ export default {
       mode: "CONNEXION",
       email: "",
       username: "",
+      userlastname:'',
       password: "",
       bio: "",
+      profilpic:""
     };
   },
   mounted: function () {
@@ -84,8 +87,10 @@ export default {
         .dispatch("inscription", {
           email: this.email,
           username: this.username,
+          userlastname: this.userlastname,
           password: this.password,
           bio: this.bio,
+          profilpic: this.profilpic
         })
         .then(function () {
           self.connexion();
@@ -153,10 +158,10 @@ export default {
 #connex input:focus {
   outline-color: #fd2d01;
 }
-#nom_poste{
+#nom_prenom{
   display: flex;
 }
-#nom_poste input{
+#nom_prenom input{
   width: 40%;
 }
 #btn_inscrip,

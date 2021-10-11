@@ -8,10 +8,10 @@
             <h1>Groupomania</h1>
           </div>
         </router-link>
-          <div  v-if='user.username' id="user_menu">
-          Bonjour <span>{{user.username}}</span>
+          <div  v-if='user.userlastname' id="user_menu">
+          Bonjour <span>{{user.userlastname}}</span>
           </div>
-        <div v-if='user.username' id="burger">
+        <div v-if='user.userlastname' id="burger">
           <span id="ico_menu"><i class="fas fa-bars"></i></span>
           <ul class="sub">
             <router-link to="/PROFILE">

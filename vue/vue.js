@@ -10,9 +10,11 @@ const inscription = {
     template: `
     <div id="inscrip">
         <label for="email">E-mail</label><input type="mail" id="email">
+        <label for="userlastname">Nom d'utilisateur</label><input type="text" id="userlastname">
         <label for="username">Nom d'utilisateur</label><input type="text" id="username">
         <label for="pass">Password</label><input type="text" id="pass">
         <label for="bio">Poste</label><input type="text" id="bio">
+        <label for="profilpic">Nom d'utilisateur</label><input type="text" id="profilpic">
         <button id="btn_inscrip" v-on:click="inscription()">
             INSCRIPTION
         </button>
@@ -47,21 +49,6 @@ const router = new VueRouter({
     ]
 })
 
-/*
-//test GET
-const message = new VueMess({
-    el: '#message',
-    data: {
-        messages: []
-    },
-    methods: {
-        affMessage() {
-            axios.get('http://localhost:8080/api/messages')
-                .then(response => this.messages = response.data)
-                .catch(err => console.log(err));
-        }
-    }
-}).$mont('#message');*/
 
 const vue = new Vue({
     router

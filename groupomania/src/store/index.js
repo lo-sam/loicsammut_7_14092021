@@ -32,13 +32,15 @@ const store = createStore({
         user: user,
         userInfos: {
             username: '',
+            userlastname: '',
             email: '',
-            bio: ''
+            bio: '',
+            profilpic: ''
         },
         listeMessage: {
             title: '',
             content: '',
-            attachment: '',
+            urlmedia: '',
             likes: ''
         }
     },
@@ -99,6 +101,20 @@ const store = createStore({
                     commit('userInfos', response.data);
                 })
                 .catch(function() {});
+        },
+        updateUserInfos: ({ commit }, userInfos) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.put('/users/me', userInfos)
+                    .then(function(response) {
+                        commit('setStatus', 'created');
+                        resolve(response)
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
+                    });
+
+            })
         },
         getListeMessage: ({ commit }) => {
             instance.get('/messages')

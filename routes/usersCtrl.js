@@ -14,16 +14,18 @@ module.exports = {
 
         const email = req.body.email;
         const username = req.body.username;
+        const userlastname = req.body.userlastname;
         const password = req.body.password;
         const bio = req.body.bio;
+        const profilpic = req.body.profilpic;
         //vérification des champs requis
-        if (email == null || username == null || password == null) {
+        if (email == null || username == null || userlastname == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants!' });
         }
 
         //verification des champs remplis
         //longueur du nom
-        if (username.length >= 13 || username.length <= 2) {
+        if ((username.length >= 13 || username.length <= 2) && (userlastname.length >= 13 || userlastname.length <= 2)) {
             return res.status(400).json({ 'error': 'Nom d\' utilisateur incorrect : il doit y avoir entre 3 et 12 caractères.' });
         }
         //caractères du mail conforme au REGEX
@@ -66,8 +68,10 @@ module.exports = {
                 const NewUser = models.User.create({
                         email: email,
                         username: username,
+                        userlastname: userlastname,
                         password: bcryptedPassword,
                         bio: bio,
+                        profilpic: profilpic,
                         isAdmin: 0
                     })
                     .then(function(newUser) {
@@ -161,7 +165,7 @@ module.exports = {
 
         //récupération de l'utilisateur
         models.User.findOne({
-            attributes: ['id', 'email', 'username', 'bio'],
+            attributes: ['id', 'email', 'username', 'userlastname', 'bio', 'profilpic'],
             where: { id: userId } //les infos de l'id correspondant à l' userId du token
         }).then(function(user) {
             if (user) {
@@ -179,12 +183,13 @@ module.exports = {
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
         let bio = req.body.bio;
+        let profilpic = req.body.profilpic;
 
         asyncLib.waterfall([
             function(done) {
                 //récupération de l'utilisateur
                 models.User.findOne({
-                        attributes: ['id', 'bio'],
+                        attributes: ['id', 'bio', 'profilpic'],
                         where: { id: userId } //les infos de l'id correspondant à l' userId du token
                     }).then(function(userFound) {
                         done(null, userFound);
@@ -198,7 +203,8 @@ module.exports = {
                 if (userFound) {
                     userFound.update({
                         //si la nouvel bio est valide elle est alors remplacée, sinon l'ancienne reste dans la base de donnée
-                        bio: (bio ? bio : userFound.bio)
+                        bio: (bio ? bio : userFound.bio),
+                        profilpic: (profilpic ? profilpic : userFound.profilpic)
                     }).then(function() {
                         done(userFound);
                     }).catch(function(err) {

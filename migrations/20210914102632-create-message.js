@@ -24,7 +24,7 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
-            attachment: {
+            urlmedia: {
                 allowNull: true,
                 type: Sequelize.STRING
             },
