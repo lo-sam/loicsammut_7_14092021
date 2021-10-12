@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('./middleware/multer-config')
 const usersCtrl = require('./routes/usersCtrl');
 const messagesCtrl = require('./routes/messagesCtrl');
 //routes
