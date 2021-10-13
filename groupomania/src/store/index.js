@@ -65,6 +65,7 @@ const store = createStore({
                 token: '',
             }
             localStorage.removeItem('user');
+            document.location.reload();
         }
     },
     actions: {
@@ -130,13 +131,27 @@ const store = createStore({
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
+                        document.location.reload();
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
             })
         },
-
+        deleteMessage: ({ commit }) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.delete('/messages')
+                    .then(function(response) {
+                        commit('setStatus', 'deleted');
+                        resolve(response);
+                        document.location.reload();
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_deleted');
+                        reject(err);
+                    });
+            })
+        },
 
     }
 })

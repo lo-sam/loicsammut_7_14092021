@@ -22,7 +22,7 @@
           const message = {
               title: req.body.title,
               content: req.body.content,
-              urlmedia: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              urlmedia: req.body.content && req.file,
               UserId: userId,
               // attache: req.body.content && req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
           };
@@ -37,59 +37,17 @@
       },
 
 
+      deleteMessage: function(req, res) {
+          models.Message.findOne({ where: { id: id } })
+              .then(message => {
+                  Message.deleteOne({ where: { id: id } })
+                      .then(() => res.status(200).json({ message: 'Message supprimé' }))
+                      .catch(error => res.status(400).json({ error: 'impossible de supprimer le message' }))
+              });
+      },
 
-      /*
 
 
-                if (title == null || content == null) {
-                    return res.status(400).json({ 'error': 'Tous les champs doivent être remplis!' })
-                }
-
-                if (title.length <= TITLE_LIMIT || content.length <= CONTENT_LIMIT) {
-                    return res.status(400).json({ 'error': 'le titre doit faire min 2 caractères et le message min 4 caractères!' })
-                }
-
-                asyncLib.waterfall([
-                        function(done) {
-                            //récupération de l'identifiant
-                            models.User.findOne({
-                                    where: { id: userId }
-                                })
-                                //si l'identifiant est présent dans la base
-                                .then(function(userFound) {
-                                    done(null, userFound);
-
-                                })
-                                //si il ne l est pas
-                                .catch(function(err) {
-                                    return res.status(500).json({ 'error': 'Impossible de vérifier l\' utilisateur!' });
-                                });
-                        },
-                        function(userFound, done) {
-                            //si l utilisateur existe
-                            if (userFound) {
-                                models.Message.create({
-                                        title: title,
-                                        content: content,
-                                        likes: 0,
-                                        userId: userFound.id //relation message -> identifiant
-                                    })
-                                    .then(function(newMessage) {
-                                        done(newMessage);
-                                    });
-                            } else {
-                                res.status(404).json({ 'error': 'L\'utilisateur n\' existe pas!' })
-                            }
-                        },
-                    ],
-                    function(newMessage) {
-                        if (newMessage) {
-                            return res.status(201).json(newMessage); //message posté
-                        } else {
-                            return res.status(500).json({ 'error': 'Le message n\'a pas été posté' });
-                        }
-                    });
-            },*/
       listMessages: function(req, res) {
           let fields = req.query.fields; //champs à afficher
           let limit = parseInt(req.query.limit); //segmentation de la récupération des messages
@@ -103,14 +61,13 @@
 
           models.Message.findAll({ //recherche du message
               //controle de conformité
+
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
               limit: (!isNaN(limit)) ? limit : null,
               offset: (!isNaN(offset)) ? offset : null,
-              include: [{
-                  model: models.User,
-                  attributes: ['username']
-              }]
+              include: models.User
+
           }).then(function(messages) {
               if (messages) { //affichage des messages
                   res.status(200).json(messages);

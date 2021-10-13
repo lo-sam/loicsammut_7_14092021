@@ -16,5 +16,6 @@ router.put('/users/me/', usersCtrl.updateUserProfile);
 //Messages routes
 router.post('/messages/new/', multer, messagesCtrl.createMessage);
 router.get('/messages/', multer, messagesCtrl.listMessages);
+router.delete('/messages', messagesCtrl.deleteMessage);
 
 module.exports = router;

@@ -28,8 +28,9 @@
             <ul >
                 <li v-for="message in messages" :key="message.id">
                     <span >
-                        <p class="photoP"><img :src="user.profilpic" alt="photo de profil"></p>
-                        <p class="auther">Nom de l'auteur{{message.userId}}</p>
+
+                        <p class="photoP"><img :src="message.User" alt="photo de profil"></p>
+                        <p class="auther">Nom de l'auteur{{message.User.userlastname}}</p>
                         <p class="date">{{message.updatedAt}}</p>
                     </span> 
                     <span class="title">titre: <p>{{message.title}}</p></span>    
@@ -40,7 +41,7 @@
                     <div id="control"> 
                         <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                         <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                        <span class="delete" v-if="user.id == message.UserId"><i class="far fa-trash-alt"></i></span> 
+                        <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage()"><i class="far fa-trash-alt"></i></span> 
                     </div>                
                 </li>
             </ul>
@@ -58,6 +59,12 @@ export default{
                 title:'',
                 content:'',
                 urlmedia:'',
+                User: {
+                     id: '',
+                     username: '',
+                     userlastname:'',
+                     profilpic: ''
+                     }
             }
         },
         mounted: function(){
@@ -66,12 +73,12 @@ export default{
                 return;
             }            
             this.$store.dispatch('getListeMessage');
-            this.$store.dispatch('getUserInfos');
+            // this.$store.dispatch('getUserInfos');
             },
         computed:{
             ...mapState({
-                messages:'listeMessage',
-                user:'userInfos',
+                messages:'listeMessage'
+               
             }),
         },
         methods:{
@@ -179,8 +186,20 @@ li p{
     max-width: 100%;
     margin: auto;
 }
+#control{
+    display: flex;
+}
+.like,.modif,.delete{
+    cursor: pointer;
+}
 .like i{
     margin-right: 5px;
+}
+.modif{
+    margin-left: 40%;
+}
+.delete{
+    margin-left: 40%;
 }
 #createMess_head{
     display: flex;
