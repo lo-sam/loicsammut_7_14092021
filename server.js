@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const apiRouter = require('./apiRouter').router;
+const router = require('./routes/apiRouter');
+const path = require('path');
 
 //instance serveur
 const server = express();
@@ -17,7 +18,8 @@ server.use((req, res, next) => {
     next();
 });
 
-server.use('/api/', apiRouter);
+server.use('/images', express.static(path.join(__dirname, 'images')));
+server.use('/api/', router);
 
 //launcher server
 server.listen(8080, function() {

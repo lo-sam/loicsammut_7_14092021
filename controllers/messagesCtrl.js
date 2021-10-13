@@ -22,6 +22,7 @@
           const message = {
               title: req.body.title,
               content: req.body.content,
+              urlmedia: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
               UserId: userId,
               // attache: req.body.content && req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
           };

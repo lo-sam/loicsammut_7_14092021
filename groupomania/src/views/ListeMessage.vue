@@ -20,6 +20,7 @@
                <button>
                    Ajouter
                 </button>
+                <input type="file" v-if="mode == 'MESSAGE'" v-on:change="j"  />
            </span> 
             <button id="btn_createMess" v-if="title!='' && content!=''&& mode == 'MESSAGE'" @click="envMessage()">Envoyer message</button>
         </div>
@@ -36,7 +37,11 @@
                     <span v-if="message.urlmedia !== null" class="urlImg">
                         <img v-bind:src="message.urlmedia">
                     </span> 
-                    <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                    <div id="control"> 
+                        <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                        <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                        <span class="delete" v-if="user.id == message.UserId"><i class="far fa-trash-alt"></i></span> 
+                    </div>                
                 </li>
             </ul>
         </div>
@@ -98,7 +103,6 @@ export default{
 </script>
 
 <style scoped>
-
 #listeMessage{
     margin: 50px auto;
     width: 90%;
@@ -122,21 +126,17 @@ export default{
     margin: 20px auto 10px 20px;
     display: flex;
 }
-
 #ajoutMess i,
 #cancelMess i{
     font-size: 25px;
     color: #fd2d01;
 }
-
 #ajoutMess .ajoutMess{
     margin-left: 5px;
 }
-
 #cancelMess .cancelMess{
     margin-right: 5px;
 }
-
 li{
     list-style: none;
     margin: 20px;
@@ -146,14 +146,12 @@ li{
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     padding: 15px;
 }
-
 li span{
     display: flex;
     color: #fd2d01;
     padding: 0 15px;
     margin: 20px 0;
 }
-
 li p{
     color: #000;
 }
@@ -166,12 +164,10 @@ li p{
 .date{
     margin-left: auto;
 }
-
 .mess{
     padding: 15px;
     padding-top: 5px;
 }
-
 .urlImg{
     border: 1px solid rgb(240, 240, 240);
     border-radius: 10px;
@@ -179,29 +175,23 @@ li p{
     padding: 10px;
     margin-bottom: 10px;
 }
-
 .urlImg img{
     max-width: 100%;
     margin: auto;
 }
-
 .like i{
     margin-right: 5px;
 }
-
 #createMess_head{
     display: flex;
 }
-
 #createMess_head button{
     margin: 30px 0 0 40%;
 }
-
 #createMess{
     display: flex;
     flex-direction: column;
 }
-
 #createMess input,
 #createMess textarea{
   font-size: 20px;
@@ -213,26 +203,22 @@ li p{
   border: 1px solid #fd2d01;
   color: #000;
 }
-
 #createMess input{
     margin-top: 30px;
     width: 50%;
 }
-
 #urlmedia input{
     width: 50%;
   height: 30px;
   margin-left: 25%;
   
 }
-
 #urlmedia button{
     margin-left: 20px;
     border: 1px solid #fd2d01;
     border-radius: 5px;
     padding: 1px 2px;
 }
-
 #btn_createMess{
   margin: 30px auto;
   position: relative;
@@ -245,7 +231,6 @@ li p{
   border: solid 3px #fd2d01;
   border-radius: 5px;
 }
-
 #btn_createMess:hover{
   color: #000;
   background-color: #fd2d01;
