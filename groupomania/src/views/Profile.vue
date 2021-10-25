@@ -10,8 +10,8 @@
     </span>
     <div v-if="mode == 'PROFIL'" class="ficheProfil">
         <div>
-            <span class="userlastname">Prénom: <p>{{user.userlastname}}</p></span> 
-            <span class="username">Nom: <p>{{user.username}}</p></span> 
+            <span class="userlastname">Prénom: <p>{{user.username}}</p></span> 
+            <span class="username">Nom: <p>{{user.userlastname}}</p></span> 
             <span class="bio">Poste dans l'entreprise: <p>{{user.bio}}</p></span> 
             <span class="email">Adresse mail: <p>{{user.email}}</p></span>
         </div>      
@@ -29,6 +29,7 @@
             <input v-model="profilpic" :placeholder="user.profilpic" id="profilpic" class="inputProfilpic" type="text">
             <button  class="btn_upPic">Ajouter</button>
         </span> 
+            <input  @change="onFileChange()" type="file" ref="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />
     </div>
     <button class="btn_profil" v-if="mode=='PROFIL'" @click="switchUPDATE()">MODIFER PROFIL</button>
     <button class="btn_profil" v-else @click="update()">MODIFER</button>
@@ -66,6 +67,10 @@ export default{
             })
         },
         methods:{
+            onFileChange() {
+            this.file = this.$refs.file.files[0];
+            this.newImage = URL.createObjectURL(this.file)
+        },
             switchUPDATE: function () {
                 this.mode = "UPDATE";
                 },
@@ -85,6 +90,7 @@ export default{
                 profilpic: this.profilpic
                 })
                 .then(function () {
+                document.location.reload();
                 self.switchPROFIL();
                 })
                 .catch(function (err) {
@@ -147,10 +153,14 @@ display: flex;
 .profilpic{
     height: 120px;
     width: 120px;
+    margin: 0 auto;
     object-fit: cover;
     object-position: center;
     border: 3px solid #fd2d01;
     border-radius: 10px;
+}
+.profilpic img{
+    margin: 0 auto;
 }
 
 .inputProfil{

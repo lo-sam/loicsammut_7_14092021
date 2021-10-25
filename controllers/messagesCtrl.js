@@ -1,7 +1,7 @@
   // Imports
   const models = require('../models');
-  //const asyncLib = require('async');
   const jwtUtils = require('../utils/jwt.utils');
+  const fs = require('fs');
 
   // Constants
   const TITLE_LIMIT = 2;
@@ -17,14 +17,11 @@
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
           // Params
-
-
           const message = {
               title: req.body.title,
               content: req.body.content,
-              urlmedia: req.body.content && req.file,
+              urlmedia: req.body.urlmedia, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
               UserId: userId,
-              // attache: req.body.content && req.file ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}` : null,
           };
 
           models.Message.create(message)
@@ -37,14 +34,43 @@
       },
 
 
-      deleteMessage: function(req, res) {
-          models.Message.findOne({ where: { id: id } })
-              .then(message => {
-                  Message.deleteOne({ where: { id: id } })
-                      .then(() => res.status(200).json({ message: 'Message supprimé' }))
-                      .catch(error => res.status(400).json({ error: 'impossible de supprimer le message' }))
-              });
+
+      updateMessage: function(req, res) {
+          const headerAuth = req.headers['authorization']; //vérification du token
+          const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+          const messageObject = req.file ? {
+              ...JSON.parse(req.body.message),
+              urlmedia: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              UserID: userId
+          } : {...req.body };
+          if (req.file) { // On supprime l ancienne image
+              models.Message.findOne({ _id: req.params.id })
+                  .then((message) => {
+                      const filename = message.urlmedia.split('/images/')[1];
+                      fs.unlink(`images/${filename}`, () => {
+                          modelsM.updateOne({ _id: req.params.id }, {...messageObject, _id: req.params.id })
+                              .then(() => res.status(200).json({ message: 'Objet modifié !' }))
+                              .catch(error => res.status(400).json({ error: 'Impossible de modifier l\'objet' }));
+                      });
+                  });
+          } else {
+              models.Message.update({ _id: req.params.id }, {...messageObject, _id: req.params.id })
+                  .then(() => res.status(200).json({ message: 'Objet modifié !' }))
+                  .catch(error => res.status(400).json({ error: 'Impossible de modifier l\'objet' }));
+
+          }
       },
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -58,9 +84,10 @@
           if (limit > ITEMS_LIMIT) {
               limit = ITEMS_LIMIT;
           }
-
+          console.log('findAll');;
           models.Message.findAll({ //recherche du message
               //controle de conformité
+
 
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
@@ -78,5 +105,23 @@
               console.log(err);
               res.status(500).json({ "error": 'Champs invalides!' })
           });
-      }
+      },
+
+
+
+
+      deleteMessage: function(req, res) {
+          models.Message.findOne({ where: { id: req.params.id } })
+              .then(message => {
+                  if (message) {
+                      models.Message.deleteOne({ where: { id: req.params.id } })
+                      res.then(() => res.status(200).json({ message: 'Message supprimé' }))
+                  } else {
+                      res.catch(error => res.status(400).json({ error: 'impossible de supprimer le message' }))
+                  }
+              });
+
+      },
+
+
   };

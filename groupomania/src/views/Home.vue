@@ -110,6 +110,7 @@ export default {
 #switchConnex {
   cursor: pointer;
 }
+
 #inscrip__title,
 #connex__title {
   margin: 0 auto 30px auto;

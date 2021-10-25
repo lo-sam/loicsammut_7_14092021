@@ -1,9 +1,9 @@
 import { createStore } from 'vuex'
-
 const axios = require('axios');
 const instance = axios.create({
     baseURL: 'http://localhost:8080/api/'
 });
+
 
 let user = localStorage.getItem('user');
 
@@ -37,12 +37,8 @@ const store = createStore({
             bio: '',
             profilpic: ''
         },
-        listeMessage: {
-            title: '',
-            content: '',
-            urlmedia: '',
-            likes: ''
-        }
+        listeMessage: [],
+        listeCommentaires: [],
     },
     mutations: {
         setStatus: function(state, status) {
@@ -58,6 +54,9 @@ const store = createStore({
         },
         listeMessage: function(state, listeMessage) {
             state.listeMessage = listeMessage;
+        },
+        listeCommentaires: function(state, listeCommentaires) {
+            state.listeCommentaires = listeCommentaires;
         },
         deconnexion: function(state) {
             state.user = {
@@ -119,10 +118,16 @@ const store = createStore({
         },
         getListeMessage: ({ commit }) => {
             instance.get('/messages')
-                .then(function(response) {
-                    commit('listeMessage', response.data);
+                .then((response) => {
+                    commit('listeMessage', response.data.map((message) => {
+                        return {
+                            ...message
+                        }
+                    }));
                 })
-                .catch(function() {});
+                .catch(function() {
+                    console.log('pas ok');
+                });
         },
         message: ({ commit }, listeMessage) => {
             return new Promise((resolve, reject) => {
@@ -138,10 +143,26 @@ const store = createStore({
                     });
             })
         },
+        updateMessage: ({ commit }, listeMessage) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.put('/messages/modif', listeMessage)
+                    .then(function(response) {
+                        commit('setStatus', 'modify');
+                        resolve(response)
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
+                    });
+
+            })
+        },
+
+
         deleteMessage: ({ commit }) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.delete('/messages')
+                instance.delete('/messages/')
                     .then(function(response) {
                         commit('setStatus', 'deleted');
                         resolve(response);
@@ -152,6 +173,16 @@ const store = createStore({
                     });
             })
         },
+        /*
+                getListeCom: ({ commit }) => {
+                    instance.get('/messages/com')
+                        .then(function(response) {
+                            commit('listeCommentaires', response.data);
+                            console.log(response.data);
+                        })
+                        .catch(function() {});
+                },
+        */
 
     }
 })

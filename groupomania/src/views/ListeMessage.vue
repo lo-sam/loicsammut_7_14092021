@@ -1,50 +1,67 @@
 <template>
     <div id="listeMessage">
-        <span id="createMess_head">
-            <h1 v-if="mode == 'MESSAGE'">Ecrire un message</h1>
-            <button id="cancelMess" v-if="mode == 'MESSAGE'" @click="switchLISTEMESSAGE()">
-                <div class="cancelMess">Annuler</div>
-                <i class="fas fa-times-circle"></i>
+        <!-- MODE LISTE DES MESSAGES -->
+        <h1>Liste des messages</h1>
+        <router-link to='/NEWMESSAGE'>
+            <button @click="switchMESSAGE()" id="ajoutMess">
+                <i class="fas fa-plus-circle"></i>
+            <div class="ajoutMess">Ajouter un message</div>
             </button>
-        </span>
-        <h1 v-if="mode=='LISTEMESSAGE'">Liste des messages</h1>
-        <button v-if="mode == 'LISTEMESSAGE'" @click="switchMESSAGE()" id="ajoutMess">
-            <i class="fas fa-plus-circle"></i>
-           <div class="ajoutMess">Ajouter un message</div>
-        </button>
-        <div v-else id="createMess">
-            <input id="createTitle" v-if="mode == 'MESSAGE'" v-model="title" placeholder="Titre du message" type="text">
-            <textarea rows="10" cols="50"  id="createContent" v-if="mode == 'MESSAGE'" v-model="content" placeholder="Message" type="text"></textarea>
-           <span id="urlmedia">
-               <input id="createurlmedia" v-if="mode == 'MESSAGE'" v-model="urlmedia" placeholder="Pièce jointe" type="text">
-               <button>
-                   Ajouter
-                </button>
-                <input type="file" v-if="mode == 'MESSAGE'" v-on:change="j"  />
-           </span> 
-            <button id="btn_createMess" v-if="title!='' && content!=''&& mode == 'MESSAGE'" @click="envMessage()">Envoyer message</button>
-        </div>
-        <div v-if="mode=='LISTEMESSAGE'" id="listeMess">
+        </router-link>
+        <div id="listeMess">
             <ul >
-                <li v-for="message in messages" :key="message.id">
-                    <span >
-
-                        <p class="photoP"><img :src="message.User" alt="photo de profil"></p>
-                        <p class="auther">Nom de l'auteur{{message.User.userlastname}}</p>
-                        <p class="date">{{message.updatedAt}}</p>
+                <li :key="key" v-for="(message, key) in messages" >
+                    <span>
+                        <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
+                        <p class="auther">{{message.User.username}}</p> 
+                        <p class="date">le {{message.updatedAt.split('T').join(' à ').split('.000Z')[0]}}  </p>
                     </span> 
-                    <span class="title">titre: <p>{{message.title}}</p></span>    
-                    <span class="mess"><p>{{message.content}}</p></span> 
+                    <!-- TITRE DU MESSAGE --> 
+                    <span v-if="mode == 'LISTEMESSAGE'" class="title"><p>{{message.title}}</p></span>  
+                    <!-- MEDIA DU MESSAGE --> 
                     <span v-if="message.urlmedia !== null" class="urlImg">
                         <img v-bind:src="message.urlmedia">
                     </span> 
-                    <div id="control"> 
+                    <!-- UPDATE DU MEDIA -->
+                    <span class="updateMessMedia" v-if="mode == 'UPDATE'" id="urlmedia">
+                    <input class="updateMess" v-if="mode == 'UPDATE'" id="createurlmedia" v-model="message.urlmedia"  type="text">
+                    <input class="updateMess" v-if="mode == 'UPDATE'" type="file" accept="image/*"  @change="urlmedia" />
+                    </span> 
+                    <!-- CORPS DU MESSAGE --> 
+                    <span v-if="mode == 'LISTEMESSAGE'" class="mess"><p>{{message.content}}</p></span> 
+                    <!-- UPDATE DU CORPS DU MESSAGE -->
+                    <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-if="mode == 'UPDATE'" v-model="message.content"  type="text"></textarea></span>
+                    <!-- COMMENTAIRE DU MESSAGE --> 
+                    <div v-if="mode=='LISTEMESSAGE'" id="zoneCom">
+                        <ul>
+                            <li v-for="commentaire in commentaires" :key="commentaire.id">
+                                <span>{{commentaire.content}}</span>
+                            </li>
+                        </ul>
+                        <div id="ajoutCom">
+                        <input type="text" placeholder="ajouter un commentaire ici">
+                        <button class="btn--com">Envoyer</button>
+                        </div>
+                    </div>
+                    <div v-if="mode=='LISTEMESSAGE'" id="control"> 
                         <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
-                        <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                        <span class="modif" v-if="user.id == message.UserId" @click="switchUPDATE()"><i class="far fa-edit"></i></span> 
                         <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage()"><i class="far fa-trash-alt"></i></span> 
-                    </div>                
+                    </div>
+                    <!-- VALID / CANCEL UPDATE -->
+                    <div id="controlUpdate" v-else>
+                        <span id="cancelUpdate" @click="switchLISTEMESSAGE()">
+                            <i class="fas fa-times-circle"></i>
+                        </span>
+                        <span id="validUpdate">
+                            <i class="fas fa-check-circle" @click="update()"></i>
+                        </span>
+                    </div>             
                 </li>
             </ul>
+        </div>
+        <div>
+
         </div>
     </div>
 </template>
@@ -59,26 +76,24 @@ export default{
                 title:'',
                 content:'',
                 urlmedia:'',
-                User: {
-                     id: '',
-                     username: '',
-                     userlastname:'',
-                     profilpic: ''
-                     }
-            }
+                }
         },
-        mounted: function(){
+         mounted: function(){
             if(this.$store.state.user.userId == -1){
                 this.$router.push('/');
                 return;
             }            
             this.$store.dispatch('getListeMessage');
+            this.$store.dispatch('updateMessage');
+          //  this.$store.commit('deleteMessage');
+            //this.$store.dispatch('getListeCom');
             // this.$store.dispatch('getUserInfos');
             },
-        computed:{
+       computed:{
             ...mapState({
-                messages:'listeMessage'
-               
+                user:'userInfos',
+                messages:'listeMessage',
+                commentaires:'listeCommentaires'
             }),
         },
         methods:{
@@ -88,28 +103,35 @@ export default{
             switchLISTEMESSAGE: function () {
                 this.mode = "LISTEMESSAGE";
         },
-        envMessage: function(){
-            const self = this;
-            this.$store
-            .dispatch('message',{
-                title: this.title,
-                content: this.content,
-                urlmedia: this.urlmedia,
-            }).then(function(){
-                self.switchLISTEMESSAGE();
-            }).catch(function(err){
-                console.log(err);
-            })
+            switchUPDATE: function(){
+                this.mode = "UPDATE";
         },
-            deconnexion:function(){
-                this.$store.commit('deconnexion');
-                this.$router.push('/');
-            }
+        update: function () {
+        const self = this;
+        this.$store
+            .dispatch("updateMessage", {
+            title: this.title,
+            content: this.content,
+            urlmedia: this.urlmedia
+            })
+            .then(function () {
+            document.location.reload();
+            self.switchLISTEMESSAGE();
+            })
+            .catch(function (err) {
+            console.log(err);
+            });
+        },
+        deconnexion:function(){
+            this.$store.commit('deconnexion');
+            this.$router.push('/');
         }
+    }
 }
 </script>
 
 <style scoped>
+/* CSS LISTE MESSAGE */
 #listeMessage{
     margin: 50px auto;
     width: 90%;
@@ -122,16 +144,16 @@ export default{
     border: 3px solid #fd2d01;
     color: #000;
 }
-.photoP img{
+.photoP{
     width: 60px;
     height: 60px;
-    object-fit: cover;
-    object-position: center;
+    border: 3px solid #fd2d01;
+    border-radius: 10px;
 }
-#ajoutMess,
-#cancelMess{
+#ajoutMess{
     margin: 20px auto 10px 20px;
     display: flex;
+    color: #000;
 }
 #ajoutMess i,
 #cancelMess i{
@@ -140,9 +162,6 @@ export default{
 }
 #ajoutMess .ajoutMess{
     margin-left: 5px;
-}
-#cancelMess .cancelMess{
-    margin-right: 5px;
 }
 li{
     list-style: none;
@@ -165,10 +184,14 @@ li p{
 .auther, .date{
     margin-top: 35px;
 }
+.title{
+    text-transform: uppercase;
+}
 .auther{
     margin-left: 5px;
 }
 .date{
+    font-size: 16px;
     margin-left: auto;
 }
 .mess{
@@ -178,7 +201,6 @@ li p{
 .urlImg{
     border: 1px solid rgb(240, 240, 240);
     border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     padding: 10px;
     margin-bottom: 10px;
 }
@@ -201,36 +223,27 @@ li p{
 .delete{
     margin-left: 40%;
 }
-#createMess_head{
-    display: flex;
+
+/* CSS UPDATE */
+
+.update{
+    margin: auto;
+    margin-bottom: 20px;
 }
-#createMess_head button{
-    margin: 30px 0 0 40%;
+.updateMess{
+    width: 50%;
+    padding-left: 1%;
+    color: #000;
+    font-size: 20px;
+    border: 1px solid #fd2d01;
+    border-radius: 5px;
+    color: #000;
+
 }
-#createMess{
-    display: flex;
+.updateMessMedia{
     flex-direction: column;
-}
-#createMess input,
-#createMess textarea{
-  font-size: 20px;
-  margin: auto;
-  margin-bottom: 20px;
-  border-radius: 5px;
-  padding-left: 1%;
-  color: #000;
-  border: 1px solid #fd2d01;
-  color: #000;
-}
-#createMess input{
-    margin-top: 30px;
-    width: 50%;
-}
-#urlmedia input{
-    width: 50%;
-  height: 30px;
-  margin-left: 25%;
-  
+    margin: auto;
+    margin-bottom: 20px;
 }
 #urlmedia button{
     margin-left: 20px;
@@ -238,7 +251,7 @@ li p{
     border-radius: 5px;
     padding: 1px 2px;
 }
-#btn_createMess{
+#btn_updateMess{
   margin: 30px auto;
   position: relative;
   display: inline-block;
@@ -250,12 +263,94 @@ li p{
   border: solid 3px #fd2d01;
   border-radius: 5px;
 }
-#btn_createMess:hover{
+#btn_updateMess:hover{
   color: #000;
   background-color: #fd2d01;
   border-radius: 10px;
   box-shadow: 0 0 10px #fd2d01, 0 0 40px #fd2d01, 0 0 80px #fd2d01;
   transition: 1s;
   transition-delay: 0.1s;
+}
+
+#controlUpdate{
+    display: flex;
+    margin: auto;
+}
+#controlUpdate #cancelUpdate,
+#controlUpdate #validUpdate{
+    border: 1px solid rgb(240, 240, 240);
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+    box-sizing: border-box;
+    padding: 20px 20px;
+}
+
+#controlUpdate #cancelUpdate{
+   margin: 20px auto 20px 20%;
+}
+
+#controlUpdate #validUpdate{
+    margin-right: 20%;
+}
+
+#controlUpdate #validUpdate i{
+    color: green;
+}
+
+#controlUpdate #validUpdate i,
+#controlUpdate #cancelUpdate i{
+    padding: 0 15px;
+    font-size: 25px;
+}
+
+#zoneCom{
+    display: flex;
+    flex-direction: column;
+}
+
+#zoneCom li{
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.151);
+    width: 90%;
+    margin: 5px auto;
+}
+
+#ajoutCom{
+    width: 90%;
+    margin: 20px auto;
+}
+
+#ajoutCom .btn--com{
+    color: #000;
+    font-size: 20px;
+    width: 10%;
+    height: 40px;
+    border: 1px solid rgb(240, 240, 240);
+    border-radius: 0 10px 10px 0;
+    outline: none;
+    padding: 0 5px;
+    margin: auto;
+    box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+}
+
+#ajoutCom .btn--com:hover{
+  color: rgba(253, 45, 1);
+  transition: 1s;
+  transition-delay: 0.1s;
+}
+
+#zoneCom input{
+    color: #000;
+    font-size: 20px;
+    width: 90%;
+    height: 40px;
+    border: 1px solid rgb(240, 240, 240);
+    border-radius: 10px 0 0 10px;
+    outline: none;
+    padding-left: 5px;
+    margin: auto;
+    box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
 }
 </style>

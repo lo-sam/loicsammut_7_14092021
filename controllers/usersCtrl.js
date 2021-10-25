@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwtUtils = require('../utils/jwt.utils');
 const models = require('../models');
 const asyncLib = require('async');
-
+const fs = require('fs');
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX = /^(?=.*\d).{4,8}$/;
 
@@ -17,7 +17,7 @@ module.exports = {
         const userlastname = req.body.userlastname;
         const password = req.body.password;
         const bio = req.body.bio;
-        const profilpic = req.body.profilpic;
+        const profilpic = `${req.protocol}://${req.get('host')}/images/profil.png`;
         //vérification des champs requis
         if (email == null || username == null || userlastname == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants!' });
@@ -156,6 +156,7 @@ module.exports = {
             }
         });
     },
+
     getUserProfile: function(req, res) {
         const headerAuth = req.headers['authorization']; //vérification du token
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
@@ -183,7 +184,7 @@ module.exports = {
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
         let bio = req.body.bio;
-        let profilpic = req.body.profilpic;
+        let profilpic = req.body.profilpic; //`${req.protocol}://${req.get('host')}/images/${req.body.file.filename}`;
 
         asyncLib.waterfall([
             function(done) {

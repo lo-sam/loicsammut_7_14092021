@@ -9,7 +9,7 @@
           </div>
         </router-link>
           <div  v-if='user.userlastname' id="user_menu">
-          Bonjour <span>{{user.userlastname}}</span>
+          Bonjour <span>{{user.username}}</span>
           </div>
         <div v-if='user.userlastname' id="burger">
           <span id="ico_menu"><i class="fas fa-bars"></i></span>
