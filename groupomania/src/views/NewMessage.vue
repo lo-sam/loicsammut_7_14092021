@@ -17,7 +17,7 @@
             <textarea rows="6" id="createContent" v-model="content" placeholder="Message" type="text"></textarea>
             <span id="urlmedia">
                 <input id="createurlmedia" v-model="urlmedia" placeholder="Pièce jointe" type="text">
-                <input type="file" accept="image/*" @change="urlmedia" />
+                <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />
             </span> 
             <div id="btn_center">
                 <router-link to='/MESSAGES'>
@@ -66,9 +66,9 @@ export default{
             .dispatch('message',{
                 title: this.title,
                 content: this.content,
-                urlmedia: this.urlmedia,
+                urlmedia: this.file,
             }).then(function(){
-                self.switchLISTEMESSAGE();
+                self.$router.push("/MESSAGES");
             }).catch(function(err){
                 console.log(err);
             })

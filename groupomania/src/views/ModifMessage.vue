@@ -1,84 +1,39 @@
 <template>
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
-        <h1>Liste des messages</h1>
-        <router-link to='/NEWMESSAGE'>
-            <button @click="switchMESSAGE()" id="ajoutMess">
-                <i class="fas fa-plus-circle"></i>
-            <div class="ajoutMess">Ajouter un message</div>
-            </button>
-        </router-link>
+        <h1>Modifer le message:</h1>
         <div id="listeMess">
-            <ul >
-                <li :key="key" v-for="(message, key) in messages" >
-                    <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}">
-                        <span>
-                            <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
-                            <p class="auther">{{message.User.username}}</p> 
-                            <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.createdAt.slice(11,16)}}  </p>
-                        </span> 
-                        <!-- TITRE DU MESSAGE --> 
-                        <span v-if="mode == 'LISTEMESSAGE'" class="title"><p>{{message.title}}</p></span>  
-                        <!-- UPDATE TITRE DU MESSAGE --> 
-                        <span v-if="mode == 'UPDATE'" class="updateMess"><input v-model="message.title" type="text"></span>  
-                        <!-- MEDIA DU MESSAGE --> 
-                        <span v-if="message.urlmedia !== null" class="urlImg">
-                            <img v-bind:src="message.urlmedia">
-                        </span> 
-                        <!-- UPDATE DU MEDIA -->
-                        <span class="updateMessMedia" v-if="mode == 'UPDATE'" id="urlmedia">
-                        <input class="updateMess" v-if="mode == 'UPDATE'" id="createurlmedia" v-model="message.urlmedia"  type="text">
-                        <input class="updateMess" v-if="mode == 'UPDATE'" type="file" accept="image/*"  @change="urlmedia" />
-                        </span> 
-                        <!-- CORPS DU MESSAGE --> 
-                        <span v-if="mode == 'LISTEMESSAGE'" class="mess"><p>{{message.content}}</p></span> 
-                        <!-- UPDATE DU CORPS DU MESSAGE -->
-                        <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-if="mode == 'UPDATE'" v-model="message.content"  type="text"></textarea></span>
-                        <!-- COMMENTAIRE DU MESSAGE --> 
-                        <div v-if="mode=='LISTEMESSAGE'" id="zoneCom">
-                            <ul>
-                                <li v-for="commentaire in commentaires" :key="commentaire.id">
-                                    <span>{{commentaire.content}}</span>
-                                </li>
-                            </ul>
-                            <div id="ajoutCom">
-                            <input type="text" placeholder="ajouter un commentaire ici">
-                            <button class="btn--com">Envoyer</button>
-                            </div>
-                        </div>
-                        <div v-if="mode=='LISTEMESSAGE'" id="control"> 
-                            <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
-                            <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}">
-                            <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                            </router-link>
-                            <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(id)"><i class="far fa-trash-alt"></i></span> 
-                        </div>
-                        <!-- VALID / CANCEL UPDATE -->
-                        <div id="controlUpdate" v-else>
-                            <span id="cancelUpdate" @click="switchLISTEMESSAGE()">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
+                    <!-- UPDATE TITRE DU MESSAGE --> 
+                    <span class="updateMess"><input v-model="title" type="text"></span>  
+                    <!-- UPDATE DU MEDIA -->
+                    <span class="updateMessMedia" id="urlmedia">
+                    <input class="updateMess" id="createurlmedia" v-model="urlmedia"  type="text">
+                    <input class="updateMess" type="file" accept="image/*"  @change="urlmedia" />
+                    </span> 
+                    <!-- UPDATE DU CORPS DU MESSAGE -->
+                    <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-model="content"  type="text"></textarea></span>
+                    <!-- VALID / CANCEL UPDATE -->
+                    <div id="controlUpdate">
+                        <span id="cancelUpdate" @click="switchLISTEMESSAGE()">
+                            <i class="fas fa-times-circle"></i>
+                        </span>
+                        <router-link to='/MESSAGES'>
                             <span id="validUpdate">
                                 <i class="fas fa-check-circle" @click="update()"></i>
                             </span>
-                        </div>  
-                    </router-link>           
-                </li>
-            </ul>
-        </div>
-        <div>
-
-        </div>
+                        </router-link>
+                    </div>      
+            
+        </div> 
     </div>
 </template>
 
 <script>
 import {mapState}from 'vuex'
 export default{
-        name:'LISTEMESSAGE',
+        name:'MODIFMESSAGE',
         data: function(){
             return{
-                mode: "LISTEMESSAGE",
                 title:'',
                 content:'',
                 urlmedia:'',
@@ -88,31 +43,18 @@ export default{
             if(this.$store.state.user.userId == -1){
                 this.$router.push('/');
                 return;
-            }            
-            this.$store.dispatch('getListeMessage');
-            //this.$store.dispatch('updateMessage');
-            this.$store.dispatch('deleteMessage');
-            //this.$store.dispatch('getListeCom');
-            // this.$store.dispatch('getUserInfos');
+            }        
+            this.$store.dispatch('getListeMessage');   
+            this.$store.dispatch('getOneMessage');
             },
        computed:{
             ...mapState({
                 user:'userInfos',
-                messages:'listeMessage',
-                commentaires:'listeCommentaires'
+                message:'getOneMessage',
+                listeMessage: 'listeMessage'
             }),
         },
         methods:{
-            switchMESSAGE: function () {
-                this.mode = "MESSAGE";
-        },
-            switchLISTEMESSAGE: function () {
-                this.mode = "LISTEMESSAGE";
-        },
-            switchUPDATE: function(){
-                this.mode = "UPDATE";
-
-        },
         update: function () {
         const self = this;
         this.$store
@@ -121,13 +63,10 @@ export default{
                 content: this.content,
                 urlmedia: this.file,
             }).then(function(){
-                self.switchLISTEMESSAGE();
+                self.$router.push("/MESSAGES");
             }).catch(function(err){
                 console.log(err);
             });
-        },
-        deleteMessage:function(){
-            this.$store.dispatch('deleteMessage')
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');

@@ -2,6 +2,8 @@
   const models = require('../models');
   const jwtUtils = require('../utils/jwt.utils');
   const fs = require('fs');
+  const asyncLib = require('async');
+
 
   // Constants
   const TITLE_LIMIT = 2;
@@ -11,69 +13,109 @@
   // Routes 
   module.exports = {
       //création d un message
-      createMessage: function(req, res) {
+      createMessage: (req, res) => {
           // Getting auth header
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+
 
           // Params
           const message = {
               title: req.body.title,
               content: req.body.content,
-              urlmedia: req.body.urlmedia, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-              UserId: userId,
+              urlmedia: '', //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              UserId: userId
           };
 
           models.Message.create(message)
-
-          .then(() => res.status(201).json({ message: 'message enregistré !' }))
+              .then(() => res.status(201).json({ message: 'message enregistré !' }))
               .catch(function(err) {
                   res.status(500).json({ message: 'probleme  au niveau du serveur' });
                   console.log(err);
               });
       },
 
+      //trouver un message
+      oneMessage: function(req, res) {
+          const headerAuth = req.headers['authorization']; //vérification du token
+          const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+          if (req.params.userId = userId) {
+              models.Message.findOne({
+                  attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
+                  where: { id: req.params.id }
+              }).then(function(message) {
+                  if (message) {
+                      res.status(201).json(message);
+                      console.log("ok pour le message");
+                  } else {
+                      res.status(404).json({ 'error': 'Message non trouvé!' });
+                  }
+              }).catch(function(err) {
+                  console.log(err + "pas ok pour le message");
+                  return res.status(500).json({ 'error': 'Impossible d\'accéder au message' });
+              });
+          }
+      },
 
-
+      //modification des messages
       updateMessage: function(req, res) {
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
-          const messageObject = req.file ? {
-              ...JSON.parse(req.body.message),
-              urlmedia: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-              UserID: userId
-          } : {...req.body };
-          if (req.file) { // On supprime l ancienne image
-              models.Message.findOne({ _id: req.params.id })
-                  .then((message) => {
-                      const filename = message.urlmedia.split('/images/')[1];
-                      fs.unlink(`images/${filename}`, () => {
-                          modelsM.updateOne({ _id: req.params.id }, {...messageObject, _id: req.params.id })
-                              .then(() => res.status(200).json({ message: 'Objet modifié !' }))
-                              .catch(error => res.status(400).json({ error: 'Impossible de modifier l\'objet' }));
-                      });
-                  });
-          } else {
-              models.Message.update({ _id: req.params.id }, {...messageObject, _id: req.params.id })
-                  .then(() => res.status(200).json({ message: 'Objet modifié !' }))
-                  .catch(error => res.status(400).json({ error: 'Impossible de modifier l\'objet' }));
 
+
+          if (req.params.userId = userId) {
+
+              // Params
+
+              let title = req.body.title;
+              let content = req.body.content;
+              let urlmedia = req.body.urlmedia; //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
+
+              asyncLib.waterfall([
+                  function(done) {
+                      models.Message.findOne({
+                          attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
+                          where: { id: req.params.id }
+                      }).then(function(messageFound) {
+                          done(null, messageFound);
+                          console.log("ok pour le message");
+                      }).catch(function(err) {
+                          console.log(err + "pas ok pour le message");
+                          return res.status(500).json({ 'error': 'Impossible d\'accéder au message' });
+                      });
+                  },
+                  function(messageFound, done) {
+                      if (messageFound) {
+                          messageFound.update({
+                              title: (title ? title : messageFound.title),
+                              content: (content ? content : messageFound.content),
+                              urlmedia: (urlmedia ? urlmedia : messageFound.urlmedia)
+                          }).then(function() {
+                              done(messageFound);
+                              console.log('ok pour modif message');
+                          }).catch(function(err) {
+                              console.log('pas ok pour modif message');
+                              res.status(500).json({ 'error': 'Mise à jour impossible' });
+                          });
+                      } else {
+                          res.status(404).json({ 'error': 'Le message n\'a pas été trouvé' });
+                      }
+                  },
+              ], function(messageFound) {
+                  if (messageFound) {
+                      return res.status(201).json(messageFound);
+                  } else {
+                      return res.status(500).json({ 'error': 'Impossible de mettre le message à jour' })
+                  }
+              });
+          } else {
+              return res.status(400).json({ 'error': 'utilisateur non autorisé' })
           }
       },
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+      //récupération des messages
       listMessages: function(req, res) {
           let fields = req.query.fields; //champs à afficher
           let limit = parseInt(req.query.limit); //segmentation de la récupération des messages
@@ -111,17 +153,14 @@
 
 
       deleteMessage: function(req, res) {
-          models.Message.findOne({ where: { id: req.params.id } })
-              .then(message => {
-                  if (message) {
-                      models.Message.deleteOne({ where: { id: req.params.id } })
-                      res.then(() => res.status(200).json({ message: 'Message supprimé' }))
-                  } else {
-                      res.catch(error => res.status(400).json({ error: 'impossible de supprimer le message' }))
-                  }
-              });
+          const headerAuth = req.headers['authorization']; //vérification du token
+          const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
-      },
-
+          if (req.params.userId = userId) {
+              models.Message.destroy({ where: { id: req.params.id } })
+                  .then(() => res.status(200).json({ message: "Message supprimé !" }))
+                  .catch(error => res.status(400).json({ error }))
+          }
+      }
 
   };

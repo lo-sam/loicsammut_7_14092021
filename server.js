@@ -21,10 +21,11 @@ server.use((req, res, next) => {
 });
 
 
-server.use('/images', express.static(path.join(__dirname, "images")));
+server.use('/images', express.static(path.join(__dirname, 'images')));
 server.use('/api', router);
 
 //launcher server
 server.listen(8080, function() {
     console.log('Serveur lancé!');
 });
+module.exports = server;

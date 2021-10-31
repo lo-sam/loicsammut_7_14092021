@@ -1,16 +1,20 @@
 const bcrypt = require('bcrypt');
 const jwtUtils = require('../utils/jwt.utils');
 const models = require('../models');
+
+const User = models.user;
+const jwt = require('jsonwebtoken');
+
 const asyncLib = require('async');
 const fs = require('fs');
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-const PASSWORD_REGEX = /^(?=.*\d).{4,8}$/;
+const PASSWORD_REGEX = /^(?=.*\d).{8,20}$/;
 
 //routes
 module.exports = {
 
     //Enregistrement d un utilisateur
-    register: function(req, res) {
+    register: (req, res) => {
 
         const email = req.body.email;
         const username = req.body.username;
@@ -18,11 +22,11 @@ module.exports = {
         const password = req.body.password;
         const bio = req.body.bio;
         const profilpic = `${req.protocol}://${req.get('host')}/images/profil.png`;
+
         //vérification des champs requis
         if (email == null || username == null || userlastname == null || password == null) {
             return res.status(400).json({ 'error': 'paramètres manquants!' });
         }
-
         //verification des champs remplis
         //longueur du nom
         if ((username.length >= 13 || username.length <= 2) && (userlastname.length >= 13 || userlastname.length <= 2)) {
@@ -95,8 +99,6 @@ module.exports = {
             }
         });
     },
-
-
 
     //connexion de l'utilisateur
     login: function(req, res) {
@@ -225,6 +227,27 @@ module.exports = {
                 return res.status(500).json({ 'error': 'Impossible de mettre le profile à jour!' });
             }
         });
+    },
+
+    deleteProfil: function(req, res) {
+        const headerAuth = req.headers['authorization']; //vérification du token
+        const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+
+        models.User.findOne({
+            attributes: ['id', 'email', 'username', 'userlastname', 'bio', 'profilpic'],
+            where: { id: userId } //les infos de l'id correspondant à l' userId du token
+        }).then(function(user) {
+            if (user) {
+                models.User.destroy({ where: { id: userId } })
+                    .then(() => res.status(200).json({ message: 'Utilisateur supprimé' }))
+                    .catch(error => res.status(400).json({ error }))
+            } else {
+                res.status(404).json({ 'error': 'L\' utilisateur n\'a pas été trouvé!' });
+            }
+        }).catch(function(err) {
+            res.status(500).json({ 'error': 'Impossible d\' accéder à l\'utilisateur' });
+        });
+
     }
 
-}
+};

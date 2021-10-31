@@ -38,6 +38,8 @@ const store = createStore({
             profilpic: ''
         },
         listeMessage: [],
+        upMessage: [],
+        deleteMessage: '',
         listeCommentaires: [],
     },
     mutations: {
@@ -55,8 +57,17 @@ const store = createStore({
         listeMessage: function(state, listeMessage) {
             state.listeMessage = listeMessage;
         },
+        message: function(state, message) {
+            state.message = message;
+        },
+        upMessage: function(state, upMessage) {
+            state.upMessage = upMessage;
+        },
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
+        },
+        deleteMessage: function(state, deleteMessage) {
+            state.deleteMessage = deleteMessage;
         },
         deconnexion: function(state) {
             state.user = {
@@ -129,10 +140,20 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
+
+
+        getOneMessage: ({ commit }) => {
+            instance.get('/message/:id')
+                .then(function(response) {
+                    commit('listeMessage', response.data);
+                })
+                .catch(function() {});
+        },
+
         message: ({ commit }, listeMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.post('/messages/new', listeMessage)
+                instance.post('/message/new', listeMessage)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
@@ -146,11 +167,13 @@ const store = createStore({
         updateMessage: ({ commit }, listeMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.put('/messages/modif', listeMessage)
+                instance.put('/message/modif/:id', listeMessage)
                     .then(function(response) {
-                        commit('setStatus', 'modify');
+                        console.log('message modifié');
+                        commit('setStatus', 'created');
                         resolve(response)
                     }).catch(function(err) {
+                        console.log('message non modifié');
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
@@ -160,29 +183,16 @@ const store = createStore({
 
 
         deleteMessage: ({ commit }) => {
-            return new Promise((resolve, reject) => {
-                commit;
-                instance.delete('/messages/')
-                    .then(function(response) {
-                        commit('setStatus', 'deleted');
-                        resolve(response);
-                        document.location.reload();
-                    }).catch(function(err) {
-                        commit('setStatus', 'error_deleted');
-                        reject(err);
-                    });
-            })
+            instance.delete('/message/delete/:id')
+                .then(function(response) {
+                    console.log('then avant commit');
+                    commit('setStatus', 'deleted');
+                    console.log(response);
+                }).catch(function(err) {
+                    console.log(err + 'catch avant commit');
+                    commit('setStatus', 'error_deleted');
+                });
         },
-        /*
-                getListeCom: ({ commit }) => {
-                    instance.get('/messages/com')
-                        .then(function(response) {
-                            commit('listeCommentaires', response.data);
-                            console.log(response.data);
-                        })
-                        .catch(function() {});
-                },
-        */
 
     }
 })

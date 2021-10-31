@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
                         allowNull: false,
                     }
                 }),
-                models.Message.hasMany(models.Commentaire);
+                models.Message.hasMany(models.Commentaire, {
+                    foreignKey: 'messageId',
+                    onDelete: 'CASCADE'
+                });
         }
     };
 
