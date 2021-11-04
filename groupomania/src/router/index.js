@@ -10,11 +10,11 @@ import OneMessage from '../views/OneMessage.vue'
 
 const routes = [
     { path: '/', component: Home, name: 'HOME' },
-    { path: '/MESSAGES', component: ListeMessage, name: 'LISTEMESSAGE' },
-    { path: '/MODIFMESSAGE/:id', component: ModifMessage, name: 'MODIFMESSAGE' },
+    { path: '/messages', component: ListeMessage, name: 'LISTEMESSAGE' },
+    { path: '/message/modif/:id', component: ModifMessage, name: 'MODIFMESSAGE' },
     { path: '/PROFILE', component: Profile, name: 'PROFILE' },
-    { path: '/NEWMESSAGE', component: NewMessage, name: 'NEWMESSAGE' },
-    { path: '/ONEMESSAGE/:id', props: true, component: OneMessage, name: 'ONEMESSAGE' },
+    { path: '/message/new', component: NewMessage, name: 'NEWMESSAGE' },
+    { path: '/message/:id', props: true, component: OneMessage, name: 'ONEMESSAGE' },
 ];
 
 const router = createRouter({

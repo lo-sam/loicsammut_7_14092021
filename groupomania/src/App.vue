@@ -2,7 +2,7 @@
   <body>
     <main>
       <nav>
-        <router-link to="/MESSAGES">
+        <router-link to="/messages">
           <div id="corp">
             <img id="logo" src="./assets/icon.png" alt="logo Groupomania" />
             <h1>Groupomania</h1>

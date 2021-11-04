@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usersCtrl = require('../controllers/usersCtrl');
 const messagesCtrl = require('../controllers/messagesCtrl');
+const likesCtrl = require('../controllers/likesCtrl');
 const commentaireCtrl = require('../controllers/commentaireCtrl');
 const multer = require('../middleware/multer-config');
 
@@ -21,6 +22,9 @@ router.get('/messages/', messagesCtrl.listMessages);
 router.get('/message/:id', messagesCtrl.oneMessage);
 router.delete('/message/delete/:id', messagesCtrl.deleteMessage);
 router.put('/message/modif/:id', multer, messagesCtrl.updateMessage);
+
+//Likes routes
+router.post('/message/:id/like', likesCtrl.Like);
 
 //Commentaires routes
 router.post('/message/commentaire/:id', commentaireCtrl.createCommentaire);

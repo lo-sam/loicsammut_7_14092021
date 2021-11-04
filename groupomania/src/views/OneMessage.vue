@@ -2,52 +2,38 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <div id="listeMess">
+            <!-- PROFILE
+            <span>
+                <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
+                <p class="auther">{{message.User.username}}</p> 
+                <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.createdAt.slice(11,16)}}  </p>
+            </span> -->
 
-
-
-  
-
-
-
-
-
-
-                    <!-- TITRE DU MESSAGE --> 
-                        <span  class="title"><p>{{title}}</p></span>  
-                        <!-- MEDIA DU MESSAGE --> 
-                        <span v-if="urlmedia !== null" class="urlImg">
-                            <img v-bind:src="urlmedia">
-                        </span> 
-                        <!-- CORPS DU MESSAGE --> 
-                        <span  class="mess"><p>{{content}}</p></span> 
-                        <!-- COMMENTAIRE DU MESSAGE --> 
-                        <div id="zoneCom">
-                            <ul>
-                                <li v-for="commentaire in commentaires" :key="commentaire.id">
-                                    <span>{{commentaire.content}}</span>
-                                </li>
-                            </ul>
-                            <div id="ajoutCom">
-                            <input type="text" placeholder="ajouter un commentaire ici">
-                            <button class="btn--com">Envoyer</button>
-                            </div>
-                        </div>
-                <!--       <div id="control"> 
-                            <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
-                            <a href="/MODIFMESSAGE/">
-                            <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                            </a>
-                            <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
-                        </div>-->
-                        <!-- VALID / CANCEL UPDATE -->
-                        <div id="controlUpdate">
-                            <span id="cancelUpdate">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
-                            <span id="validUpdate">
-                                <i class="fas fa-check-circle" @click="update()"></i>
-                            </span>
-                        </div>
+            <!-- TITRE DU MESSAGE --> 
+            <span  class="title"><p>{{message.title}}</p></span>  
+            <!-- MEDIA DU MESSAGE --> 
+            <span v-if="urlmedia !== null" class="urlImg">
+                <img v-bind:src="message.urlmedia">
+            </span> 
+            <!-- CORPS DU MESSAGE --> 
+            <span  class="mess"><p>{{message.content}}</p></span> 
+            <div id="control"> 
+                <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
+            </div>
+            <!-- COMMENTAIRE DU MESSAGE --> 
+            <div id="zoneCom">
+                <div id="ajoutCom">
+                <input type="text" placeholder="ajouter un commentaire ici">
+                <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
+                </div>
+                <ul>
+                    <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
+                        <span><p class="commentaire">{{commentaire.content}}</p><p class="timeCom">le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}</p></span>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>
@@ -61,22 +47,23 @@ export default{
             title:'',
             content:'',
             urlmedia:'',
-
             }        
-        },
-         mounted: function(){
+        }, 
+        mounted: function(){
+            let id = this.$route.params.id;
             if(this.$store.state.user.userId == -1){
                 this.$router.push('/');
                 return;
             }      
-            this.$store.dispatch('getOneMessage');  
+            this.$store.dispatch('getOneMessage', id);  
             this.$store.dispatch('getListeMessage');
-            },
+            this.$store.dispatch('getListeCom', id);
+        },
        computed:{
             ...mapState({
                 user:'userInfos',
-                messages:'listeMessage',
-                message: 'getOneMessage',
+                message: 'message',
+                commentaire:'commentaire',
                 commentaires:'listeCommentaires'
             }),
         },
@@ -86,6 +73,19 @@ export default{
         },
             switchUPDATE: function(){
                 this.mode = "UPDATE";
+        },
+        addComment:function(id){
+            this.$store.dispatch("getListeMessage");
+            this.$store.dispatch("commentaire", {
+                id: id,
+                message: this.message,
+            });
+            this.commentaire.content = "";
+            this.$store.dispatch("getListeCom");
+            this.$store.dispatch("getOneMessage", this.message.id); 
+         },
+        getUpOneMessage(id){
+            this.$router.push(`/message/modif/${id}`);
         },
         update: function () {
         const self = this;
@@ -100,8 +100,11 @@ export default{
                 console.log(err);
             });
         },
-        deleteMessage:function(){
-            this.$store.dispatch('deleteMessage')
+        deleteMessage:function(id){
+            if(confirm('Voulez-vous vraiment supprimer le message?')){
+                this.$store.dispatch('deleteMessage',id);
+                this.$router.push('/messages');
+            }
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');
@@ -113,16 +116,27 @@ export default{
 
 <style scoped>
 /* CSS LISTE MESSAGE */
-#listeMessage{
-    margin: 50px auto;
-    width: 90%;
-    padding: 30px;
+#listeMess{
+    color: #000;
     display: flex;
     flex-direction: column;
+    margin: 50px auto;
+    list-style: none;
+    padding: 30px;
     font-size: 20px;
-    border-radius: 5px;
-    background-color: #fff;
-    border: 3px solid #fd2d01;
+    width: 90%;
+    margin-bottom: 30px;
+    border-top: 1px solid rgb(240, 240, 240);
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+#listeMess span{
+    display: flex;
+    color: #fd2d01;
+    padding: 0 15px;
+    margin: 20px 0;
+}
+#listeMess p{
     color: #000;
 }
 .photoP{
@@ -144,24 +158,6 @@ export default{
 #ajoutMess .ajoutMess{
     margin-left: 5px;
 }
-li{
-    list-style: none;
-    margin: 20px;
-    margin-bottom: 30px;
-    border-top: 1px solid rgb(240, 240, 240);
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    padding: 15px;
-}
-li span{
-    display: flex;
-    color: #fd2d01;
-    padding: 0 15px;
-    margin: 20px 0;
-}
-li p{
-    color: #000;
-}
 .auther, .date{
     margin-top: 35px;
 }
@@ -169,6 +165,7 @@ li p{
     text-transform: uppercase;
 }
 .auther{
+    font-size: 30px;
     margin-left: 5px;
 }
 .date{
@@ -186,25 +183,29 @@ li p{
     margin-bottom: 10px;
 }
 .urlImg img{
+    max-height: 250px;
     max-width: 100%;
     margin: auto;
 }
 #control{
     display: flex;
+    justify-content: space-around;
 }
 .like,.modif,.delete{
     cursor: pointer;
 }
-.like i{
+#control .like i{
     margin-right: 5px;
 }
-.modif{
-    margin-left: 40%;
+.listCom{
+    list-style: none;
 }
-.delete{
-    margin-left: 40%;
+.commentaire{
+    margin-right: auto;
 }
-
+.timeCom{
+    margin-left: auto;
+}
 /* CSS UPDATE */
 
 .update{

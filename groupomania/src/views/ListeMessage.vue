@@ -2,7 +2,7 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <h1>Liste des messages</h1>
-        <router-link to='/NEWMESSAGE'>
+        <router-link to='/message/new'>
             <button @click="switchMESSAGE()" id="ajoutMess">
                 <i class="fas fa-plus-circle"></i>
             <div class="ajoutMess">Ajouter un message</div>
@@ -11,7 +11,8 @@
         <div id="listeMess">
             <ul >
                 <li :key="key" v-for="(message, key) in messages" >
-                    <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}">
+                   <!-- <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}"> -->
+                    <div @click="getOneMessage(message.id)"> 
                         <span>
                             <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                             <p class="auther">{{message.User.username}}</p> 
@@ -32,26 +33,13 @@
                         </span> 
                         <!-- CORPS DU MESSAGE --> 
                         <span v-if="mode == 'LISTEMESSAGE'" class="mess"><p>{{message.content}}</p></span> 
+                        </div>  
                         <!-- UPDATE DU CORPS DU MESSAGE -->
                         <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-if="mode == 'UPDATE'" v-model="message.content"  type="text"></textarea></span>
-                        <!-- COMMENTAIRE DU MESSAGE --> 
-                        <div v-if="mode=='LISTEMESSAGE'" id="zoneCom">
-                            <ul>
-                                <li v-for="commentaire in commentaires" :key="commentaire.id">
-                                    <span>{{commentaire.content}}</span>
-                                </li>
-                            </ul>
-                            <div id="ajoutCom">
-                            <input type="text" placeholder="ajouter un commentaire ici">
-                            <button class="btn--com">Envoyer</button>
-                            </div>
-                        </div>
                         <div v-if="mode=='LISTEMESSAGE'" id="control"> 
                             <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
-                            <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}">
-                            <span class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                            </router-link>
-                            <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(id)"><i class="far fa-trash-alt"></i></span> 
+                            <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                            <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
                         </div>
                         <!-- VALID / CANCEL UPDATE -->
                         <div id="controlUpdate" v-else>
@@ -62,7 +50,8 @@
                                 <i class="fas fa-check-circle" @click="update()"></i>
                             </span>
                         </div>  
-                    </router-link>           
+                    
+                    <!-- </router-link> -->
                 </li>
             </ul>
         </div>
@@ -90,28 +79,25 @@ export default{
                 return;
             }            
             this.$store.dispatch('getListeMessage');
-            //this.$store.dispatch('updateMessage');
-            this.$store.dispatch('deleteMessage');
-            //this.$store.dispatch('getListeCom');
-            // this.$store.dispatch('getUserInfos');
             },
        computed:{
             ...mapState({
                 user:'userInfos',
                 messages:'listeMessage',
-                commentaires:'listeCommentaires'
             }),
         },
         methods:{
+            getOneMessage(id){
+                this.$router.push(`/message/${id}`);
+            },
+            getUpOneMessage(id){
+                this.$router.push(`/message/modif/${id}`);
+            },
             switchMESSAGE: function () {
                 this.mode = "MESSAGE";
         },
             switchLISTEMESSAGE: function () {
                 this.mode = "LISTEMESSAGE";
-        },
-            switchUPDATE: function(){
-                this.mode = "UPDATE";
-
         },
         update: function () {
         const self = this;
@@ -126,8 +112,11 @@ export default{
                 console.log(err);
             });
         },
-        deleteMessage:function(){
-            this.$store.dispatch('deleteMessage')
+        deleteMessage:function(id){
+            if(confirm('Voulez-vous vraiment supprimer le message?')){
+                this.$store.dispatch('deleteMessage',id);
+                this.$router.push('/messages');
+            }
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');
@@ -212,6 +201,7 @@ li p{
     margin-bottom: 10px;
 }
 .urlImg img{
+    max-height: 300px;
     max-width: 100%;
     margin: auto;
 }

@@ -23,7 +23,7 @@
           const message = {
               title: req.body.title,
               content: req.body.content,
-              urlmedia: '', //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              urlmedia: req.body.urlmedia, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
               UserId: userId
           };
 
@@ -37,11 +37,13 @@
 
       //trouver un message
       oneMessage: function(req, res) {
+          let fields = req.query.fields; //champs à afficher
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
           if (req.params.userId = userId) {
               models.Message.findOne({
-                  attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
+                  attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
+                  include: models.User,
                   where: { id: req.params.id }
               }).then(function(message) {
                   if (message) {

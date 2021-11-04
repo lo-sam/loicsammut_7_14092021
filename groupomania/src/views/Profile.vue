@@ -29,10 +29,13 @@
             <input v-model="profilpic" :placeholder="user.profilpic" id="profilpic" class="inputProfilpic" type="text">
             <button  class="btn_upPic">Ajouter</button>
         </span> 
-            <input  @change="onFileChange()" type="file" ref="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />
+         <!--   <input  @change="onFileChange()" type="file" ref="file" name="image"  accept=".jpg, .jpeg, .gif, .png" /> -->
     </div>
-    <button class="btn_profil" v-if="mode=='PROFIL'" @click="switchUPDATE()">MODIFER PROFIL</button>
-    <button class="btn_profil" v-else @click="update()">MODIFER</button>
+    <div class="btn_MProf" v-if="mode=='PROFIL'"> 
+        <button class="btn_profil btn_modif"  @click="switchUPDATE()">MODIFER PROFIL</button>
+        <button class="btn_profil btn_suppr"  @click="deleteProfile()">SUPPRIMER PROFIL</button>
+    </div>
+    <button class="btn_profil btn_validModif" v-else @click="update()">MODIFER</button>
 </div>
 </template>
 
@@ -97,6 +100,13 @@ export default{
                 console.log(err);
                 });
             },
+            deleteProfile:function(){
+            if(confirm('Voulez-vous vraiment supprimer votre compte?')){
+                this.$store.dispatch('deleteUser');
+                this.$router.push('/');
+            }
+        },
+
         }
 }
 </script>
@@ -195,9 +205,18 @@ display: flex;
 #nomUp_prenomUp{
     display: flex;
 }
-
+.btn_MProf{
+    display: flex;
+    justify-content: space-around;
+}
+.btn_modif,
+.btn_suppr{
+    margin: 30px;
+    }
+.btn_validModif{
+    margin: 30px auto;
+}
 .btn_profil{
-  margin: 30px auto;
   position: relative;
   display: inline-block;
   padding: 15px 30px;

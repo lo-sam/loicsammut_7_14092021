@@ -4,7 +4,7 @@
         <span id="createMess_head">
             <h1>Ecrire un message</h1>
             <div id="cancelMessRight">
-                <router-link to='/MESSAGES'>
+                <router-link to='/messages'>
                     <button id="cancelMess">
                         <div class="cancelMess">Annuler</div>
                         <i class="fas fa-times-circle"></i>
@@ -16,11 +16,22 @@
             <input id="createTitle" v-model="title" placeholder="Titre du message" type="text">
             <textarea rows="6" id="createContent" v-model="content" placeholder="Message" type="text"></textarea>
             <span id="urlmedia">
-                <input id="createurlmedia" v-model="urlmedia" placeholder="Pièce jointe" type="text">
-                <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />
+                <input id="createurlmedia" v-model="urlmedia" placeholder="Entrez une URL" type="text">
+              <!--  <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />  -->
             </span> 
+            <!-- GIPHY -->
+            <input v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
+            <button class="button_Giphy" @click=getGifs()>Chercher un GIF</button>
+            <div class="gif-container">
+                <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click=getGifAddress(gif)>
+            </div>
+
+
+
+
+
             <div id="btn_center">
-                <router-link to='/MESSAGES'>
+                <router-link to='/messages'>
                     <button id="btn_createMess" v-if="title!='' && content!=''" @click="envMessage()">
                         Envoyer message
                     </button>
@@ -42,7 +53,10 @@ export default{
                 title:'',
                 content:'',
                 urlmedia:'',
-                }
+                message:{},
+                searchTerm:"",
+                gifs:[]
+            }
         },
          mounted: function(){
             if(this.$store.state.user.userId == -1){
@@ -50,9 +64,8 @@ export default{
                 return;
             }            
             this.$store.dispatch('getListeMessage');
-            //this.$store.dispatch('getListeCom');
             },
-       computed:{
+        computed:{
             ...mapState({
                 user:'userInfos',
                 messages:'listeMessage',
@@ -66,18 +79,47 @@ export default{
             .dispatch('message',{
                 title: this.title,
                 content: this.content,
-                urlmedia: this.file,
+                urlmedia: this.urlmedia ,
             }).then(function(){
-                self.$router.push("/MESSAGES");
+                self.$router.push("/messages");
             }).catch(function(err){
                 console.log(err);
             })
         },
-            deconnexion:function(){
-                this.$store.commit('deconnexion');
-                this.$router.push('/');
-            }
+        deconnexion:function(){
+            this.$store.commit('deconnexion');
+            this.$router.push('/');
+        },
+        getGifs() {
+            let apiKey = "Crvc0H1g5pYBrVkqfyykxGi5a52RreAD";
+            let searchEndPoint = "https://api.giphy.com/v1/gifs/search?";
+            let limit = 30;
+            let url = `${searchEndPoint}&api_key=${apiKey}&q=${
+                this.searchTerm
+            }&limit=${limit}`;
+            fetch(url)
+                .then(response => {
+                    return response.json();
+                })
+                .then(json => {
+                    console.log(json);
+                this.buildGifs(json);
+                })
+                .catch(err => console.log(err));
+        },
+        buildGifs(json) {
+        this.gifs = json.data.map(gif => gif.id).map(gifId => {
+            return `https://media.giphy.com/media/${gifId}/giphy.gif`;
+        });
+        },
+        getGifAddress:function(gif){
+            const self = this;
+        console.log(gif)
+        this.urlmedia = gif;     
+        this.searchTerm = '';
+        self.getGifs()
         }
+      },
 }
 
 
@@ -160,7 +202,7 @@ margin-right: 5%;
 }
 
 #btn_createMess{
-  margin: 30px auto;
+  margin: 50px auto 30px auto;
   position: relative;
   display: inline-block;
   padding: 15px 30px;
@@ -186,4 +228,29 @@ margin-right: 5%;
     margin: auto;
 }
 
+.gif-container{
+    margin: auto;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+}
+#gif{
+    width: 180px;
+    height: 180px;
+    margin: 5px;
+}
+.button_Giphy{
+    margin: auto;
+    width: 20%;
+  position: relative;
+  display: inline-block;
+  padding: 15px 30px;
+  text-decoration: none;
+  color: #000;
+  overflow: hidden;
+  transition: 0.2s;
+  cursor: pointer;
+  border: solid 3px #fd2d01;
+  border-radius: 5px;
+}
 </style>

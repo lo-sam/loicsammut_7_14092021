@@ -24,17 +24,13 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
+            Likes: {
+                allowNull: false,
+                type: Sequelize.INTEGER
+            },
             urlmedia: {
                 allowNull: true,
                 type: Sequelize.STRING
-            },
-            likes: {
-                allowNull: false,
-                type: Sequelize.INTEGER
-            },
-            dislikes: {
-                allowNull: false,
-                type: Sequelize.INTEGER
             },
             createdAt: {
                 allowNull: false,

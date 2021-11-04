@@ -38,9 +38,14 @@ const store = createStore({
             profilpic: ''
         },
         listeMessage: [],
-        upMessage: [],
-        deleteMessage: '',
+        message: {
+            id: '',
+            title: '',
+            content: '',
+            urlmedia: ''
+        },
         listeCommentaires: [],
+        commentaire: {}
     },
     mutations: {
         setStatus: function(state, status) {
@@ -60,14 +65,11 @@ const store = createStore({
         message: function(state, message) {
             state.message = message;
         },
-        upMessage: function(state, upMessage) {
-            state.upMessage = upMessage;
-        },
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
         },
-        deleteMessage: function(state, deleteMessage) {
-            state.deleteMessage = deleteMessage;
+        commentaire: function(state, commentaire) {
+            state.commentaire = commentaire;
         },
         deconnexion: function(state) {
             state.user = {
@@ -89,6 +91,7 @@ const store = createStore({
                         resolve(response);
                     }).catch(function(err) {
                         commit('setStatus', 'error_login');
+                        console.log('User non trouvé :' + err)
                         reject(err);
                     });
             })
@@ -127,6 +130,22 @@ const store = createStore({
 
             })
         },
+        deleteUser: ({ commit }, userInfos) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.delete('/users/me/delete/', userInfos)
+                    .then(function(response) {
+                        commit('setStatus', 'deleted');
+                        resolve(response);
+                        document.location.reload();
+                        console.log('Compte supprimé avec succès!')
+                    }).catch(function(err) {
+                        console.log(err + 'catch avant commit');
+                        commit('setStatus', 'error_deleted');
+                        reject(err);
+                    });
+            })
+        },
         getListeMessage: ({ commit }) => {
             instance.get('/messages')
                 .then((response) => {
@@ -140,16 +159,13 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
-
-
-        getOneMessage: ({ commit }) => {
-            instance.get('/message/:id')
-                .then(function(response) {
-                    commit('listeMessage', response.data);
+        getOneMessage: ({ commit }, id) => {
+            instance.get('/message/' + id)
+                .then((response) => {
+                    commit('message', response.data);
                 })
                 .catch(function() {});
         },
-
         message: ({ commit }, listeMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
@@ -158,40 +174,71 @@ const store = createStore({
                         commit('setStatus', 'created');
                         resolve(response);
                         document.location.reload();
+                        console.log('Message supprimé avec succès!')
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
             })
         },
-        updateMessage: ({ commit }, listeMessage) => {
+        updateMessage: ({ commit }, id) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.put('/message/modif/:id', listeMessage)
+                instance.put('/message/modif/' + id)
                     .then(function(response) {
+                        commit('message', response.data);
                         console.log('message modifié');
-                        commit('setStatus', 'created');
+                        console.log(response.data);
                         resolve(response)
                     }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
                         console.log('message non modifié');
+                    });
+            })
+        },
+        deleteMessage: ({ commit }, id) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.delete('/message/delete/' + id)
+                    .then(function(response) {
+                        commit('setStatus', 'deleted');
+                        resolve(response);
+                        document.location.reload();
+                    }).catch(function(err) {
+                        console.log(err + 'catch avant commit');
+                        commit('setStatus', 'error_deleted');
+                        reject(err);
+                    });
+            })
+        },
+        getListeCom: ({ commit }, id) => {
+            instance.get('/message/commentaires/' + id)
+                .then((response) => {
+                    commit('listeCommentaires', response.data.map((commentaire) => {
+                        return {
+                            ...commentaire
+                        }
+                    }));
+                })
+                .catch(function() {
+                    console.log('pas ok');
+                });
+        },
+        commentaire: ({ commit }, id) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.post('/message/commentaire/' + id)
+                    .then(function(response) {
+                        console.log(response.data);
+                        commit('setStatus', 'created');
+                        resolve(response);
+                        document.location.reload();
+                    }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
-
             })
-        },
-
-
-        deleteMessage: ({ commit }) => {
-            instance.delete('/message/delete/:id')
-                .then(function(response) {
-                    console.log('then avant commit');
-                    commit('setStatus', 'deleted');
-                    console.log(response);
-                }).catch(function(err) {
-                    console.log(err + 'catch avant commit');
-                    commit('setStatus', 'error_deleted');
-                });
         },
 
     }
