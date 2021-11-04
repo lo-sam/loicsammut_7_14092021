@@ -31,11 +31,9 @@
 
                   
                     <div id="btn_center">
-                        <router-link to='/messages'>
-                            <button id="btn_updateMess" @click="update(message.id)">
-                                Envoyer message
-                            </button>
-                        </router-link>
+                        <button id="btn_updateMess" @click="update(message.id)">
+                            Envoyer message
+                        </button>
                     </div>
 
                         
@@ -64,7 +62,6 @@ export default{
                 return;
             }        
             this.$store.dispatch('getOneMessage',id);
-            this.$store.dispatch('updateMessage',id);   
             },
        computed:{
             ...mapState({
@@ -74,18 +71,18 @@ export default{
             }),
         },
         methods:{
-        update: function () {
+        update: function (id) {
         const self = this;
-        this.$store
-            .dispatch("updateMessage", {
-                title: this.title,
-                content: this.content,
-                urlmedia: this.urlmedia,
-            }).then(function(){
-                self.$router.push("/messages");
-            }).catch(function(err){
-                console.log(err);
-            });
+        this.$store.dispatch('updateMessage', id,{
+            title: this.title,
+            content: this.content,
+            urlmedia: this.urlmedia
+        }).then(function(){
+            self.$router.push("/messages");
+            console.log('cool');
+        }).catch(function(err){
+            console.log(err);
+        })
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');

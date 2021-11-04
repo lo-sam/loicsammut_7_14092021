@@ -131,8 +131,6 @@
           console.log('findAll');;
           models.Message.findAll({ //recherche du message
               //controle de conformité
-
-
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
               limit: (!isNaN(limit)) ? limit : null,

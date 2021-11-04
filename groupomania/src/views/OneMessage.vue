@@ -6,11 +6,20 @@
             <span>
                 <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                 <p class="auther">{{message.User.username}}</p> 
-                <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.createdAt.slice(11,16)}}  </p>
+                <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
             </span> -->
-
-            <!-- TITRE DU MESSAGE --> 
-            <span  class="title"><p>{{message.title}}</p></span>  
+            <div id="oneMess_head">
+                <!-- TITRE DU MESSAGE --> 
+                <span  class="title"><p>{{message.title}}</p></span>  
+                <div id="cancelMessRight">
+                    <router-link to='/messages'>
+                        <button id="cancelMess">
+                            <i class="fas fa-arrow-circle-left"></i>
+                            <div class="cancelMess">Retour</div>
+                        </button>
+                    </router-link>
+                </div>
+            </div>
             <!-- MEDIA DU MESSAGE --> 
             <span v-if="urlmedia !== null" class="urlImg">
                 <img v-bind:src="message.urlmedia">
@@ -18,7 +27,7 @@
             <!-- CORPS DU MESSAGE --> 
             <span  class="mess"><p>{{message.content}}</p></span> 
             <div id="control"> 
-                <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                 <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
                 <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
             </div>
@@ -55,13 +64,14 @@ export default{
                 this.$router.push('/');
                 return;
             }      
-            this.$store.dispatch('getOneMessage', id);  
             this.$store.dispatch('getListeMessage');
+            this.$store.dispatch('getOneMessage', id);  
             this.$store.dispatch('getListeCom', id);
         },
        computed:{
             ...mapState({
                 user:'userInfos',
+                messages: 'listeMessage',
                 message: 'message',
                 commentaire:'commentaire',
                 commentaires:'listeCommentaires'
@@ -75,30 +85,14 @@ export default{
                 this.mode = "UPDATE";
         },
         addComment:function(id){
-            this.$store.dispatch("getListeMessage");
-            this.$store.dispatch("commentaire", {
-                id: id,
-                message: this.message,
+            this.$store.dispatch("getOneMessage",id);
+            this.$store.dispatch("commentaire",id, {
+                messageId: this.messageId,
+                content: this.content
             });
-            this.commentaire.content = "";
-            this.$store.dispatch("getListeCom");
-            this.$store.dispatch("getOneMessage", this.message.id); 
          },
         getUpOneMessage(id){
             this.$router.push(`/message/modif/${id}`);
-        },
-        update: function () {
-        const self = this;
-        this.$store
-            .dispatch("updateMessage", {
-                title: this.title,
-                content: this.content,
-                urlmedia: this.file,
-            }).then(function(){
-                self.switchLISTEMESSAGE();
-            }).catch(function(err){
-                console.log(err);
-            });
         },
         deleteMessage:function(id){
             if(confirm('Voulez-vous vraiment supprimer le message?')){
@@ -109,6 +103,9 @@ export default{
         deconnexion:function(){
             this.$store.commit('deconnexion');
             this.$router.push('/');
+        },
+        like: function(){
+            console.log('like');
         }
     }
 }
@@ -139,6 +136,29 @@ export default{
 #listeMess p{
     color: #000;
 }
+#oneMess_head{
+    display: flex;
+}
+#cancelMessRight{
+margin-left: auto;
+margin-right: 5%;
+}
+
+#cancelMess{
+    margin: 20px auto 10px 20px;
+    display: flex;
+    color: #000;
+}
+
+#cancelMess i{
+    font-size: 25px;
+    color: #fd2d01;
+}
+
+#cancelMess .cancelMess{
+    margin-left: 5px;
+}
+
 .photoP{
     width: 60px;
     height: 60px;

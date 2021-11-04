@@ -38,12 +38,7 @@ const store = createStore({
             profilpic: ''
         },
         listeMessage: [],
-        message: {
-            id: '',
-            title: '',
-            content: '',
-            urlmedia: ''
-        },
+        message: {},
         listeCommentaires: [],
         commentaire: {}
     },
@@ -70,6 +65,9 @@ const store = createStore({
         },
         commentaire: function(state, commentaire) {
             state.commentaire = commentaire;
+        },
+        like: function(state, like) {
+            state.like = like;
         },
         deconnexion: function(state) {
             state.user = {
@@ -174,7 +172,7 @@ const store = createStore({
                         commit('setStatus', 'created');
                         resolve(response);
                         document.location.reload();
-                        console.log('Message supprimé avec succès!')
+                        console.log('Message créé avec succès!')
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
@@ -186,10 +184,10 @@ const store = createStore({
                 commit;
                 instance.put('/message/modif/' + id)
                     .then(function(response) {
-                        commit('message', response.data);
-                        console.log('message modifié');
-                        console.log(response.data);
+                        commit('setStatus', 'modified');
                         resolve(response)
+                        console.log(response.data);
+                        console.log('Message modifié avec succès!');
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
@@ -205,6 +203,7 @@ const store = createStore({
                         commit('setStatus', 'deleted');
                         resolve(response);
                         document.location.reload();
+                        console.log('Message supprimé avec succès!')
                     }).catch(function(err) {
                         console.log(err + 'catch avant commit');
                         commit('setStatus', 'error_deleted');
@@ -230,17 +229,16 @@ const store = createStore({
                 commit;
                 instance.post('/message/commentaire/' + id)
                     .then(function(response) {
-                        console.log(response.data);
-                        commit('setStatus', 'created');
+                        commit('commentaire', response);
                         resolve(response);
                         document.location.reload();
+                        console.log(response);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
             })
         },
-
     }
 })
 
