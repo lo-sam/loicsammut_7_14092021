@@ -60,6 +60,12 @@ const store = createStore({
         message: function(state, message) {
             state.message = message;
         },
+        modifMessage: function(state, id, message) {
+            const index = state.message.findIndex(el => el.id === id)
+            if (index !== -1) {
+                Object.assign(state.listeMessage[index], message)
+            }
+        },
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
         },
@@ -179,12 +185,12 @@ const store = createStore({
                     });
             })
         },
-        updateMessage: ({ commit }, id) => {
+        updateMessage: ({ commit }, modifMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.put('/message/modif/' + id)
+                instance.put('/message/modif/' + modifMessage)
                     .then(function(response) {
-                        commit('setStatus', 'modified');
+                        commit('setStatus', 'created');
                         resolve(response)
                         console.log(response.data);
                         console.log('Message modifié avec succès!');

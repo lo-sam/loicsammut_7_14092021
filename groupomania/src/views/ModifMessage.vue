@@ -14,12 +14,12 @@
         </div>
         <div id="modifMess">
                     <!-- UPDATE TITRE DU MESSAGE --> 
-                    <input class="updateMess" v-model="message.title" type="text">
+                    <input class="updateMess" :value="message.title" type="text">
                     <!-- UPDATE DU CORPS DU MESSAGE -->
-                    <textarea class="updateMess" rows="3"   id="createContent" v-model="message.content"  type="text"></textarea>
+                    <textarea class="updateMess" rows="3"   id="createContent" :value="message.content"  type="text"></textarea>
                     <!-- UPDATE DU MEDIA -->
                     <span class="updateMessMedia" id="urlmedia">
-                    <input class="updateMess" id="createurlmedia" v-model="message.urlmedia"  type="text">
+                    <input class="updateMess" id="createurlmedia" :value="message.urlmedia"  type="text">
                    <!-- <input class="updateMess" type="file" accept="image/*"  @change="urlmedia" />-->
                     </span> 
                     <!-- GIPHY -->
@@ -71,7 +71,7 @@ export default{
             }),
         },
         methods:{
-        update: function (id) {
+       /* update: function (id) {
         const self = this;
         this.$store.dispatch('updateMessage', id,{
             title: this.title,
@@ -83,6 +83,17 @@ export default{
         }).catch(function(err){
             console.log(err);
         })
+        },*/
+        update: function(id){
+            this.$store.dispatch('updateMessage',id,{
+                title: this.title,
+                content: this.content,
+                urlmedia: this.urlmedia
+            }).then(function(){
+                console.log('maj ok');
+            }).catch(function(err){
+                console.log('maj pas ok',err);
+            })
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');
