@@ -18,13 +18,12 @@
                     <!-- UPDATE DU CORPS DU MESSAGE -->
                     <textarea class="updateMess" rows="3"   id="createContent" :value="message.content"  type="text"></textarea>
                     <!-- UPDATE DU MEDIA -->
-                    <span class="updateMessMedia" id="urlmedia">
                     <input class="updateMess" id="createurlmedia" :value="message.urlmedia"  type="text">
-                   <!-- <input class="updateMess" type="file" accept="image/*"  @change="urlmedia" />-->
-                    </span> 
                     <!-- GIPHY -->
-                    <input v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
-                    <button class="button_Giphy" @click="getGifs()">Chercher un GIF</button>
+                    <div id="gif-search">
+                    <input id="input_Giphy" class="updateMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
+                    <button id="button_Giphy" class="updateMess" @click="getGifs()">GIF</button>
+                    </div>
                     <div class="gif-container">
                         <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
                     </div>
@@ -251,8 +250,7 @@ margin-right: 5%;
     margin: auto;
     margin-bottom: 20px;
 }
-#modifMess input,
-#modifMess textarea{
+.updateMess{
     width: 50%;
     font-size: 20px;
     margin: auto;
@@ -263,15 +261,10 @@ margin-right: 5%;
     border: 1px solid #fd2d01;
     color: #000;
 }
-#urlmedia input{
-    height: 30px;
-    margin-left: 25%;
-}
-#urlmedia button{
-    margin-left: 20px;
-    border: 1px solid #fd2d01;
-    border-radius: 5px;
-    padding: 1px 2px;
+#gif-search{
+    display: flex;
+    margin: auto;
+    width: 50%;
 }
 .gif-container{
     margin: auto;
@@ -284,18 +277,18 @@ margin-right: 5%;
     height: 180px;
     margin: 5px;
 }
-.button_Giphy{
-    margin: auto;
-    width: 25%;
-    position: relative;
+#gif-search #input_Giphy{
+    width: 85%;
+}
+#button_Giphy{
+    margin-left: 5px;
+    width: 15%;
     display: inline-block;
-    padding: 15px 30px;
+    padding: 0px 0px;
     text-decoration: none;
     color: #000;
-    overflow: hidden;
-    transition: 0.2s;
     cursor: pointer;
-    border: solid 3px #fd2d01;
+    border: solid 1px #fd2d01;
     border-radius: 5px;
 }
 #btn_center{

@@ -101,7 +101,7 @@ export default{
                 });
             },
             deleteProfile:function(){
-            if(confirm('Voulez-vous vraiment supprimer votre compte?')){
+            if(confirm('Voulez-vous vraiment supprimer votre compte? \n Ceci est définitif!!!')){
                 this.$store.dispatch('deleteUser');
                 this.$router.push('/');
             }

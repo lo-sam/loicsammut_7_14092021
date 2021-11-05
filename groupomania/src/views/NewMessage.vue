@@ -20,10 +20,12 @@
               <!--  <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />  -->
             </span> 
             <!-- GIPHY -->
-            <input v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
-            <button class="button_Giphy" @click=getGifs()>Chercher un GIF</button>
+            <div id="gif-search">
+            <input id="input_Giphy" class="newMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
+            <button id="button_Giphy" class="newMess" @click="getGifs()">GIF</button>
+            </div>
             <div class="gif-container">
-                <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click=getGifAddress(gif)>
+                <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
             </div>
 
 
@@ -227,7 +229,22 @@ margin-right: 5%;
 #btn_center{
     margin: auto;
 }
-
+.newMess{
+    width: 50%;
+    font-size: 20px;
+    margin: auto;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    padding-left: 1%;
+    color: #000;
+    border: 1px solid #fd2d01;
+    color: #000;
+}
+#gif-search{
+    display: flex;
+    margin: auto;
+    width: 50%;
+}
 .gif-container{
     margin: auto;
     justify-content: center;
@@ -239,18 +256,18 @@ margin-right: 5%;
     height: 180px;
     margin: 5px;
 }
-.button_Giphy{
-    margin: auto;
-    width: 20%;
-  position: relative;
-  display: inline-block;
-  padding: 15px 30px;
-  text-decoration: none;
-  color: #000;
-  overflow: hidden;
-  transition: 0.2s;
-  cursor: pointer;
-  border: solid 3px #fd2d01;
-  border-radius: 5px;
+#gif-search #input_Giphy{
+    width: 85%;
+}
+#button_Giphy{
+    margin-left: 5px;
+    width: 15%;
+    display: inline-block;
+    padding: 0px 0px;
+    text-decoration: none;
+    color: #000;
+    cursor: pointer;
+    border: solid 1px #fd2d01;
+    border-radius: 5px;
 }
 </style>
