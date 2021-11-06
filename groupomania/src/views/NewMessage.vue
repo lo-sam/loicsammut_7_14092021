@@ -26,7 +26,7 @@
 
             <!-- EMOJIS -->
             <div v-if="mode=='EMOJIS'" class="emoji">
-                <div v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
+                <div class="unEmoji" v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
                     {{emoji.name}}
                 </div>
             </div>
@@ -233,7 +233,32 @@ margin-right: 5%;
     border: 1px solid #fd2d01;
     border-radius: 5px;
     padding: 5px;
-
+}
+.unEmoji {
+		cursor: pointer;
+		user-select: none;
+		font-size: 1.5rem;
+		margin: 0 0.5rem;
+		transition: all 0.3s;
+}
+.unEmoji:hover {
+    animation-name: emoji;
+    animation-duration: 0.6s;
+    animation-direction: forwards;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1;
+}
+/* ANIMATIONS */
+@keyframes emoji {
+	25% {
+		transform: rotateZ(90deg) scale(1.5);
+	}
+	50% {
+		transform: rotateZ(0) scale(2);
+	}
+	75% {
+		transform: rotateZ(-90deg) scale(1.5);
+	}
 }
 #GIF_btn{
     margin-left: 5px;
@@ -318,4 +343,6 @@ margin-right: 5%;
     border: solid 1px #fd2d01;
     border-radius: 5px;
 }
+
+
 </style>

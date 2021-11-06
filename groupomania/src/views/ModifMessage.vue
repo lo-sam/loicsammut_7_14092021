@@ -26,7 +26,7 @@
 
             <!-- EMOJIS -->
             <div v-if="mode=='EMOJIS'" class="emoji">
-                <div v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
+                <div class="unEmoji" v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
                     {{emoji.name}}
                 </div>
             </div>
@@ -49,7 +49,7 @@
 
             <!-- PREVIEW -->
             <div v-if="message.urlmedia !== ''"  id="preview">
-                <p>Apreçu:</p>
+                <p>Aperçu:</p>
                 <span class="urlImg">
                     <img v-bind:src="message.urlmedia">
                 </span> 
@@ -119,6 +119,7 @@ export default{
         getEmoji(emoji){
             this.message.content += emoji;
             this.mode='MODIFMESSAGE';
+            
         },
         switchGif:function(){
             this.mode='GIF';
@@ -311,6 +312,33 @@ margin-right: 5%;
     border-radius: 5px;
     padding: 5px;
 }
+.unEmoji {
+		cursor: pointer;
+		user-select: none;
+		font-size: 1.5rem;
+		margin: 0 0.5rem;
+		transition: all 0.3s;
+}
+.unEmoji:hover {
+    animation-name: emoji;
+    animation-duration: 0.6s;
+    animation-direction: forwards;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1;
+}
+/* ANIMATIONS */
+@keyframes emoji {
+	25% {
+		transform: rotateZ(90deg) scale(1.5);
+	}
+	50% {
+		transform: rotateZ(0) scale(2);
+	}
+	75% {
+		transform: rotateZ(-90deg) scale(1.5);
+	}
+}
+
 #GIF_btn{
     margin-left: 5px;
 }
