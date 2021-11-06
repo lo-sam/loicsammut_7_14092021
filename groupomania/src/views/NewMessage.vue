@@ -13,25 +13,42 @@
             </div>
         </span>        
         <div id="createMess">
+            
+            <!-- TITRE DU MESSAGE -->
             <input id="createTitle" v-model="title" placeholder="Titre du message" type="text">
+
+            <!-- CORPS DU MESSAGE -->
             <textarea rows="6" id="createContent" v-model="content" placeholder="Message" type="text"></textarea>
-            <span id="urlmedia">
-                <input id="createurlmedia" v-model="urlmedia" placeholder="Entrez une URL" type="text">
-              <!--  <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />  -->
-            </span> 
+            <div id="add_btn">
+                <div id="emoji_btn" @click='switchEmoji()'><i class="far fa-laugh-beam"></i></div>
+                <div id="GIF_btn" @click='switchGif()'>GIF</div>
+            </div>
+
+            <!-- EMOJIS -->
+            <div v-if="mode=='EMOJIS'" class="emoji">
+                <div v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
+                    {{emoji.name}}
+                </div>
+            </div>
+
             <!-- GIPHY -->
-            <div id="gif-search">
-            <input id="input_Giphy" class="newMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
-            <button id="button_Giphy" class="newMess" @click="getGifs()">GIF</button>
+            <div  v-if="mode=='GIF'">
+                <div id="gif-search">
+                    <input id="input_Giphy" class="newMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
+                    <button id="button_Giphy" class="newMess" @click="getGifs()">GIF</button>
+                </div>
+                <div class="gif-container">
+                    <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
+                </div>
             </div>
-            <div class="gif-container">
-                <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
-            </div>
 
+            <!-- MEDIA -->
+            <div v-else id="urlmedia">
+                <input  id="createurlmedia" v-model="urlmedia" placeholder="Entrez l'URL d'une image" type="text">
+              <!--  <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />  -->
+            </div> 
 
-
-
-
+            <!-- BOUTON VALIDER-->
             <div id="btn_center">
                 <router-link to='/messages'>
                     <button id="btn_createMess" v-if="title!='' && content!=''" @click="envMessage()">
@@ -40,7 +57,6 @@
                 </router-link>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -57,7 +73,7 @@ export default{
                 urlmedia:'',
                 message:{},
                 searchTerm:"",
-                gifs:[]
+                gifs:[],
             }
         },
          mounted: function(){
@@ -71,7 +87,8 @@ export default{
             ...mapState({
                 user:'userInfos',
                 messages:'listeMessage',
-                commentaires:'listeCommentaires'
+                commentaires:'listeCommentaires',
+                emojis:'emojis'
             }),
         },
         methods:{
@@ -91,6 +108,16 @@ export default{
         deconnexion:function(){
             this.$store.commit('deconnexion');
             this.$router.push('/');
+        },
+        switchEmoji:function(){
+            this.mode='EMOJIS';
+        },
+        getEmoji(emoji){
+            this.content += emoji;
+            this.mode='NEWMESSAGE';
+        },
+        switchGif:function(){
+            this.mode='GIF';
         },
         getGifs() {
             let apiKey = "Crvc0H1g5pYBrVkqfyykxGi5a52RreAD";
@@ -115,11 +142,12 @@ export default{
         });
         },
         getGifAddress:function(gif){
-            const self = this;
+        const self = this;
         console.log(gif)
         this.urlmedia = gif;     
         this.searchTerm = '';
-        self.getGifs()
+        self.getGifs();
+        this.mode='NEWMESSAGE';
         }
       },
 }
@@ -195,7 +223,27 @@ margin-right: 5%;
     height: 30px;
     margin-left: 25%;
 }
+#add_btn{
+    display: flex;
+}
+#emoji_btn,
+#GIF_btn{
+    margin: 0 0 0 25%;
+    width: fit-content;
+    border: 1px solid #fd2d01;
+    border-radius: 5px;
+    padding: 5px;
 
+}
+#GIF_btn{
+    margin-left: 5px;
+}
+#createMess .emoji{
+    display: flex;
+    margin: auto;
+    width: 50%;
+    flex-wrap: wrap;
+}
 #urlmedia button{
     margin-left: 20px;
     border: 1px solid #fd2d01;

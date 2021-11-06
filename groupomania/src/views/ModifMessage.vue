@@ -13,30 +13,56 @@
             </div>
         </div>
         <div id="modifMess">
-                    <!-- UPDATE TITRE DU MESSAGE --> 
-                    <input class="updateMess" :value="message.title" type="text">
-                    <!-- UPDATE DU CORPS DU MESSAGE -->
-                    <textarea class="updateMess" rows="3"   id="createContent" :value="message.content"  type="text"></textarea>
-                    <!-- UPDATE DU MEDIA -->
-                    <input class="updateMess" id="createurlmedia" :value="message.urlmedia"  type="text">
-                    <!-- GIPHY -->
-                    <div id="gif-search">
+
+            <!-- UPDATE TITRE DU MESSAGE --> 
+            <input :value="message.title" type="text">
+
+            <!-- UPDATE DU CORPS DU MESSAGE -->
+            <textarea  rows="6"   id="createContent" :value="message.content"  type="text"></textarea>
+            <div id="add_btn">
+                <div id="emoji_btn" @click='switchEmoji()'><i class="far fa-laugh-beam"></i></div>
+                <div id="GIF_btn" @click='switchGif()'>GIF</div>
+            </div>
+
+            <!-- EMOJIS -->
+            <div v-if="mode=='EMOJIS'" class="emoji">
+                <div v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
+                    {{emoji.name}}
+                </div>
+            </div>
+
+            <!-- GIPHY -->
+            <div v-if="mode=='GIF'">
+                <div id="gif-search">
                     <input id="input_Giphy" class="updateMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
                     <button id="button_Giphy" class="updateMess" @click="getGifs()">GIF</button>
-                    </div>
-                    <div class="gif-container">
-                        <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
-                    </div>
+                </div>
+                <div class="gif-container">
+                    <img id="gif" v-for="gif in gifs" :src="gif" :key="gif.id" @click="getGifAddress(gif)">
+                </div>
+            </div>
 
-                  
-                    <div id="btn_center">
-                        <button id="btn_updateMess" @click="update(message.id)">
-                            Envoyer message
-                        </button>
-                    </div>
+            <!-- UPDATE DU MEDIA -->
+            <div v-else id="urlmedia">
+                <input id="createurlmedia" :value="message.urlmedia"  type="text">
+            </div>
 
-                        
-            
+            <!-- PREVIEW -->
+            <div v-if="message.urlmedia !== ''"  id="preview">
+                <p>Apreçu:</p>
+                <span class="urlImg">
+                    <img v-bind:src="message.urlmedia">
+                </span> 
+            </div>
+
+
+
+            <!-- BOUTON VALIDER-->
+            <div id="btn_center">
+                <button id="btn_updateMess" @click="update(message.id)">
+                    Envoyer message
+                </button>
+            </div>
         </div> 
     </div>
 </template>
@@ -47,11 +73,12 @@ export default{
         name:'MODIFMESSAGE',
         data: function(){
             return{
+                mode:'MODIFMESSAGE',
                 title:'',
                 content:'',
                 urlmedia:'',
                 searchTerm:"",
-                gifs:[]
+                gifs:[],
                 }
         },
          mounted: function(){
@@ -67,6 +94,7 @@ export default{
                 user:'userInfos',
                 message:'message',
                 messages:'listeMessage',
+                emojis:'emojis'
             }),
         },
         methods:{
@@ -85,6 +113,17 @@ export default{
             this.$store.commit('deconnexion');
             this.$router.push('/');
         },
+        switchEmoji:function(){
+            this.mode='EMOJIS';
+        },
+        getEmoji(emoji){
+            this.message.content += emoji;
+            this.mode='MODIFMESSAGE';
+        },
+        switchGif:function(){
+            this.mode='GIF';
+        },
+
         getGifs() {
             let apiKey = "Crvc0H1g5pYBrVkqfyykxGi5a52RreAD";
             let searchEndPoint = "https://api.giphy.com/v1/gifs/search?";
@@ -112,7 +151,8 @@ export default{
         console.log(gif)
         this.message.urlmedia = gif;     
         this.searchTerm = '';
-        self.getGifs()
+        self.getGifs();
+        this.mode='MODIFMESSAGE';
         }
       },
 }
@@ -162,9 +202,6 @@ margin-right: 5%;
 #cancelMess .cancelMess{
     margin-right: 5px;
 }
-#modifMess{
-    margin-top: 20px;
-}
 .photoP{
     width: 60px;
     height: 60px;
@@ -183,6 +220,9 @@ margin-right: 5%;
 }
 #ajoutMess .ajoutMess{
     margin-left: 5px;
+}
+#modifMess{
+    margin-top: 30px;
 }
 .auther, .date{
     margin-top: 35px;
@@ -237,17 +277,50 @@ margin-right: 5%;
     margin: auto;
     margin-bottom: 20px;
 }
+#modifMess input,
+#modifMess textarea,
 .updateMess{
     width: 50%;
     font-size: 20px;
-    margin: auto;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
     border-radius: 5px;
     padding-left: 1%;
     color: #000;
     border: 1px solid #fd2d01;
     color: #000;
 }
+.updateMess{
+    margin: auto;
+    margin-bottom: 20px;
+}
+#urlmedia input{
+    height: 30px;
+    margin-left: 25%;
+}
+#modifMess input{
+    margin-top: 30px;
+}
+#add_btn{
+    display: flex;
+}
+#emoji_btn,
+#GIF_btn{
+    margin: 0 0 0 25%;
+    width: fit-content;
+    border: 1px solid #fd2d01;
+    border-radius: 5px;
+    padding: 5px;
+}
+#GIF_btn{
+    margin-left: 5px;
+}
+#modifMess .emoji{
+    display: flex;
+    margin: auto;
+    width: 50%;
+    flex-wrap: wrap;
+}
+
 #gif-search{
     display: flex;
     margin: auto;
@@ -266,6 +339,19 @@ margin-right: 5%;
 }
 #gif-search #input_Giphy{
     width: 85%;
+}
+#preview{
+    margin-left: 25%;
+}
+#preview p{
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+#preview span{
+    padding: 0;
+}
+#preview img{
+    width: 200px;
 }
 #button_Giphy{
     margin-left: 5px;
