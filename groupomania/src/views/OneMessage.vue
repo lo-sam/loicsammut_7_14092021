@@ -7,7 +7,7 @@
                 <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                 <p class="auther">{{message.User.username}}</p> 
                 <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
-            </span> -->
+            </span>  -->
             <div id="oneMess_head">
                 <!-- TITRE DU MESSAGE --> 
                 <span  class="title"><p>{{message.title}}</p></span>  
@@ -21,7 +21,7 @@
                 </div>
             </div>
             <!-- MEDIA DU MESSAGE --> 
-            <span v-if="urlmedia !== null" class="urlImg">
+            <span v-if="message.urlmedia !== null" class="urlImg">
                 <img v-bind:src="message.urlmedia">
             </span> 
             <!-- CORPS DU MESSAGE --> 
@@ -34,7 +34,7 @@
             <!-- COMMENTAIRE DU MESSAGE --> 
             <div id="zoneCom">
                 <div id="ajoutCom">
-                <input type="text" placeholder="ajouter un commentaire ici">
+                <input type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
                 <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
                 </div>
                 <ul>
@@ -52,11 +52,7 @@ import {mapState}from 'vuex'
 export default{
         name:'message',
         data () {
-            return {
-            title:'',
-            content:'',
-            urlmedia:'',
-            }        
+            return {}        
         }, 
         mounted: function(){
             let id = this.$route.params.id;
@@ -64,7 +60,6 @@ export default{
                 this.$router.push('/');
                 return;
             }      
-            this.$store.dispatch('getListeMessage');
             this.$store.dispatch('getOneMessage', id);  
             this.$store.dispatch('getListeCom', id);
         },
@@ -87,9 +82,9 @@ export default{
         addComment:function(id){
             this.$store.dispatch("getOneMessage",id);
             this.$store.dispatch("commentaire",id, {
-                messageId: this.messageId,
-                content: this.content
+                content: this.commentaire.content,
             });
+                console.log(this.content)
          },
         getUpOneMessage(id){
             this.$router.push(`/message/modif/${id}`);
@@ -104,8 +99,9 @@ export default{
             this.$store.commit('deconnexion');
             this.$router.push('/');
         },
-        like: function(){
+        like: function(id){
             console.log('like');
+            this.$store.dispatch('like',id);
         }
     }
 }

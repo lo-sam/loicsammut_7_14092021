@@ -69,11 +69,17 @@ const store = createStore({
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
         },
-        commentaire: function(state, commentaire) {
-            state.commentaire = commentaire;
+        commentaire: function(state, id, commentaire) {
+            const index = state.message.findIndex(el => el.id === id)
+            if (index !== -1) {
+                Object.assign(state.message[index], commentaire)
+            }
         },
-        like: function(state, like) {
-            state.like = like;
+        like: function(state, id, Likes) {
+            const index = state.message.findIndex(el => el.id === id)
+            if (index !== -1) {
+                Object.assign(state.message[index], Likes)
+            }
         },
         deconnexion: function(state) {
             state.user = {
@@ -85,6 +91,7 @@ const store = createStore({
         }
     },
     actions: {
+        //ACTION USERS
         connexion: ({ commit }, userInfos) => {
             commit('setStatus', 'loading');
             return new Promise((resolve, reject) => {
@@ -150,6 +157,7 @@ const store = createStore({
                     });
             })
         },
+        //ACTION MESSAGES
         getListeMessage: ({ commit }) => {
             instance.get('/messages')
                 .then((response) => {
@@ -167,6 +175,7 @@ const store = createStore({
             instance.get('/message/' + id)
                 .then((response) => {
                     commit('message', response.data);
+                    console.log(response.data)
                 })
                 .catch(function() {});
         },
@@ -217,6 +226,7 @@ const store = createStore({
                     });
             })
         },
+        //ACTION COMMENTAIRES
         getListeCom: ({ commit }, id) => {
             instance.get('/message/commentaires/' + id)
                 .then((response) => {
@@ -230,21 +240,36 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
-        commentaire: ({ commit }, id) => {
+        commentaire: ({ commit }, commentaire) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.post('/message/commentaire/' + id)
+                instance.post('/message/commentaire/' + commentaire)
                     .then(function(response) {
-                        commit('commentaire', response);
+                        commit('setStatus', 'created');
                         resolve(response);
-                        document.location.reload();
-                        console.log(response);
+                        // document.location.reload();
+                        console.log(response.data);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
             })
         },
+        //ACTION LIKES
+        like: ({ commit }, Likes) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.post('/message/' + Likes + '/like')
+                    .then(function(response) {
+                        commit('setStatus', 'created');
+                        resolve(response);
+                        console.log('like ok');
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
+                    });
+            })
+        }
     }
 })
 

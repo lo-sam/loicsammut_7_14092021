@@ -11,7 +11,6 @@
         <div id="listeMess">
             <ul >
                 <li :key="key" v-for="(message, key) in messages" >
-                   <!-- <router-link :to="{name: 'ONEMESSAGE', params : {id: message.id}}"> -->
                     <div @click="getOneMessage(message.id)"> 
                         <span>
                             <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
@@ -49,9 +48,7 @@
                             <span id="validUpdate">
                                 <i class="fas fa-check-circle" @click="update()"></i>
                             </span>
-                        </div>  
-                    
-                    <!-- </router-link> -->
+                        </div>                     
                 </li>
             </ul>
         </div>

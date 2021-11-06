@@ -5,10 +5,6 @@
   const asyncLib = require('async');
 
 
-  // Constants
-  const TITLE_LIMIT = 2;
-  const CONTENT_LIMIT = 4;
-  const ITEMS_LIMIT = 50;
 
   // Routes 
   module.exports = {
@@ -20,7 +16,7 @@
 
 
           // Params
-          const message = {
+          const message = { // On créé un objet message
               title: req.body.title,
               content: req.body.content,
               urlmedia: req.body.urlmedia, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -41,10 +37,10 @@
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
           if (req.params.userId = userId) {
-              models.Message.findOne({
+              models.Message.findOne({ // On cherche le message grace à son id
+                  where: { id: req.params.id },
                   attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
                   include: models.User,
-                  where: { id: req.params.id }
               }).then(function(message) {
                   if (message) {
                       res.status(201).json(message);
@@ -75,7 +71,7 @@
 
               asyncLib.waterfall([
                   function(done) {
-                      models.Message.findOne({
+                      models.Message.findOne({ // on récupère le message
                           attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
                           where: { id: req.params.id }
                       }).then(function(messageFound) {
@@ -88,7 +84,7 @@
                   },
                   function(messageFound, done) {
                       if (messageFound) {
-                          messageFound.update({
+                          messageFound.update({ //on modifie les champs du message trouvé
                               title: (title ? title : messageFound.title),
                               content: (content ? content : messageFound.content),
                               urlmedia: (urlmedia ? urlmedia : messageFound.urlmedia)
@@ -104,7 +100,7 @@
                       }
                   },
               ], function(messageFound) {
-                  if (messageFound) {
+                  if (messageFound) { // On applique la mise à jour
                       return res.status(201).json(messageFound);
                   } else {
                       return res.status(500).json({ 'error': 'Impossible de mettre le message à jour' })
@@ -120,21 +116,13 @@
       //récupération des messages
       listMessages: function(req, res) {
           let fields = req.query.fields; //champs à afficher
-          let limit = parseInt(req.query.limit); //segmentation de la récupération des messages
-          let offset = parseInt(req.query.offset); //segmentation de la récupération des messages
           let order = req.query.order; //affichage par rapport à un order particulier
 
-          //on limite les nombre de messges affichés
-          if (limit > ITEMS_LIMIT) {
-              limit = ITEMS_LIMIT;
-          }
           console.log('findAll');;
           models.Message.findAll({ //recherche du message
               //controle de conformité
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-              limit: (!isNaN(limit)) ? limit : null,
-              offset: (!isNaN(offset)) ? offset : null,
               include: models.User
 
           }).then(function(messages) {
@@ -157,7 +145,7 @@
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
           if (req.params.userId = userId) {
-              models.Message.destroy({ where: { id: req.params.id } })
+              models.Message.destroy({ where: { id: req.params.id } }) //on récupère l'id du message
                   .then(() => res.status(200).json({ message: "Message supprimé !" }))
                   .catch(error => res.status(400).json({ error }))
           }

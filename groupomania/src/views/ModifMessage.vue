@@ -70,19 +70,6 @@ export default{
             }),
         },
         methods:{
-       /* update: function (id) {
-        const self = this;
-        this.$store.dispatch('updateMessage', id,{
-            title: this.title,
-            content: this.content,
-            urlmedia: this.urlmedia
-        }).then(function(){
-            self.$router.push("/messages");
-            console.log('cool');
-        }).catch(function(err){
-            console.log(err);
-        })
-        },*/
         update: function(id){
             this.$store.dispatch('updateMessage',id,{
                 title: this.title,
@@ -123,7 +110,7 @@ export default{
         getGifAddress:function(gif){
             const self = this;
         console.log(gif)
-        this.urlmedia = gif;     
+        this.message.urlmedia = gif;     
         this.searchTerm = '';
         self.getGifs()
         }
