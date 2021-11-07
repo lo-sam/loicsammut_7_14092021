@@ -40,7 +40,8 @@
               models.Message.findOne({ // On cherche le message grace à son id
                   where: { id: req.params.id },
                   attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-                  include: models.User,
+                  include: [models.User, models.Commentaire]
+
               }).then(function(message) {
                   if (message) {
                       res.status(201).json(message);
@@ -75,7 +76,7 @@
                       models.Message.findOne({ // on récupère le message
                           where: { id: req.params.id },
                           attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-                          include: models.User
+                          include: [models.User, models.Commentaire]
                       }).then(function(messageFound) {
                           done(null, messageFound);
                           console.log("ok pour le message");
@@ -125,7 +126,7 @@
               //controle de conformité
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-              include: models.User
+              include: [models.User, models.Commentaire]
 
           }).then(function(messages) {
               if (messages) { //affichage des messages

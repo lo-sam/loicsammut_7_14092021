@@ -71,12 +71,12 @@ module.exports = {
 
         if (req.params.userId = userId) {
             //Params
-            let content = req.body.content;
             asyncLib.waterfall([
                 function(done) {
                     models.Commentaire.findOne({
                         attributes: ['id', 'userId', 'messageId', 'content'],
-                        where: { id: req.params.id }
+                        where: { id: req.params.id },
+                        include: Message
                     }).then(function(com) {
                         done(null, com);
                         console.log("ok pour le com");
@@ -86,6 +86,7 @@ module.exports = {
                     });
                 },
                 function(com, done) {
+                    let content = req.body.content;
                     if (com) {
                         com.update({
                             content: (content ? content : com.content)

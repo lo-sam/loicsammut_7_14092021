@@ -40,10 +40,21 @@
                 <ul>
                     <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
                         <span>
-                            <p class="commentaire">{{commentaire.content}}</p>
-                            <p class="timeCom">le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}</p>
-                            <p v-if="user.id == commentaire.UserId" class="modifCom"><i class="far fa-edit"></i></p>
-                            <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId" class="deleteCom"><i class="far fa-trash-alt"></i></p>
+                            <p v-if="mode=='COMMENTAIRE'" class="commentaire">{{commentaire.content}}</p>
+                            <p @click="modifCom(message.id)" v-if="mode=='MODIF'" id="modifCom" >
+                                <input :value="commentaire.content" type="text">
+                            </p>
+                            <p @click="modifCom(commentaire.id)" class="modifOK" v-if="mode == 'MODIF'"><i class="far fa-check-circle"></i></p>  
+                            <p @click="switchCOM()" class="modifNO" v-if="mode == 'MODIF'"><i class="far fa-times-circle"></i></p>
+                            <p class="timeCom">
+                                le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}
+                            </p>
+                            <p @click="switchModif()"  v-if="user.id == commentaire.UserId && mode=='COMMENTAIRE'" class="modifCom">
+                                <i class="far fa-edit"></i>
+                            </p>
+                            <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId" class="deleteCom">
+                                <i class="far fa-trash-alt"></i>
+                            </p>
                         </span>
                     </li>
                 </ul>
@@ -57,7 +68,9 @@ import {mapState}from 'vuex'
 export default{
         name:'message',
         data () {
-            return {}        
+            return {
+                mode: 'COMMENTAIRE'
+            }        
         }, 
         mounted: function(){
             let id = this.$route.params.id;
@@ -84,12 +97,26 @@ export default{
             switchUPDATE: function(){
                 this.mode = "UPDATE";
         },
+        switchModif: function(){
+            this.mode = 'MODIF';
+        },
+        switchCOM: function(){
+            this.mode = 'COMMENTAIRE'
+        },
         addComment:function(id){
-            this.$store.dispatch("getOneMessage",id);
+          //  this.$store.dispatch("getOneMessage",id);
             this.$store.dispatch("commentaire",id, {
-                content: this.commentaire.content,
+                content: this.content,
             });
-                console.log(this.content)
+         },
+         modifCom:function(id){
+             this.$store.dispatch("getOneMessage",id,{
+                 id: this.message.commentaire.messageId
+             });
+             this.$store.dispatch('updateCom',id,{
+
+                 content: this.content
+             })
          },
         getUpOneMessage(id){
             this.$router.push(`/message/modif/${id}`);
@@ -233,6 +260,20 @@ margin-right: 5%;
     margin-right: auto;
     flex-wrap: wrap;
     max-width: 65%;
+}
+#modifCom{
+    width: 65%;
+}
+.listCom #modifCom input{
+    margin-right: auto;
+    border-radius: 10px;
+}
+ .modifOK i,
+ .modifNO i{
+    margin: 0 3px;
+    font-size: 25px;
+    cursor: pointer;
+    color: #fd2d01;
 }
 .timeCom{
     margin-left: auto;

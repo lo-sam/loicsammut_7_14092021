@@ -88,23 +88,17 @@ const store = createStore({
         message: function(state, message) {
             state.message = message;
         },
-        modifMessage: function(state, id, message) {
-            const index = state.message.findIndex(el => el.id === id)
-            if (index !== -1) {
-                Object.assign(state.listeMessage[index], message)
-            }
-        },
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
         },
         commentaire: function(state, id, commentaire) {
-            const index = state.message.findIndex(el => el.id === id)
-            if (index !== -1) {
-                Object.assign(state.message[index], commentaire)
-            }
+            Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
+        },
+        modifMessage: function(state, id, commentaire) {
+            Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
         },
         like: function(state, id, Likes) {
-            const index = state.message.findIndex(el => el.id === id)
+            const index = state.listeMessage.findIndex(el => el.id === id)
             if (index !== -1) {
                 Object.assign(state.message[index], Likes)
             }
@@ -275,7 +269,7 @@ const store = createStore({
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
-                        // document.location.reload();
+                        document.location.reload();
                         console.log(response.data);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
@@ -283,6 +277,23 @@ const store = createStore({
                     });
             })
         },
+        updateCom: ({ commit }, id) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.put('/message/commentaire/modif/' + id)
+                    .then(function(response) {
+                        commit('setStatus', 'created');
+                        resolve(response)
+                        console.log(response.data);
+                        console.log('Commentaire modifié avec succès!');
+                    }).catch(function(err) {
+                        commit('setStatus', 'error_create');
+                        reject(err);
+                        console.log('Commentaire non modifié');
+                    });
+            })
+        },
+
         deleteCom: ({ commit }, id) => {
             return new Promise((resolve, reject) => {
                 commit;
