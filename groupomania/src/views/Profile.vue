@@ -10,8 +10,8 @@
     </span>
     <div v-if="mode == 'PROFIL'" class="ficheProfil">
         <div>
-            <span class="userlastname">Prénom: <p>{{user.username}}</p></span> 
-            <span class="username">Nom: <p>{{user.userlastname}}</p></span> 
+            <span class="userlastname">Nom: <p id="userlastname">{{user.userlastname}}</p><p v-if="user.isAdmin == 1">(Administrateur)</p></span> 
+            <span class="username">Prénom: <p>{{user.username}}</p></span> 
             <span class="bio">Poste dans l'entreprise: <p>{{user.bio}}</p></span> 
             <span class="email">Adresse mail: <p>{{user.email}}</p></span>
         </div>      
@@ -70,10 +70,6 @@ export default{
             })
         },
         methods:{
-            onFileChange() {
-            this.file = this.$refs.file.files[0];
-            this.newImage = URL.createObjectURL(this.file)
-        },
             switchUPDATE: function () {
                 this.mode = "UPDATE";
                 },
@@ -157,10 +153,14 @@ export default{
 .ficheProfil{
 display: flex;
 }
+#userlastname{
+  text-transform: uppercase;
+}
+
 .photo{
     margin-left: auto;
 }
-.profilpic{
+.profilpic img{
     height: 120px;
     width: 120px;
     margin: 0 auto;
@@ -168,9 +168,6 @@ display: flex;
     object-position: center;
     border: 3px solid #fd2d01;
     border-radius: 10px;
-}
-.profilpic img{
-    margin: 0 auto;
 }
 
 .inputProfil{

@@ -2,12 +2,12 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <div id="listeMess">
-            <!-- PROFILE-->
+            <!-- PROFILE
             <span>
                 <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                 <p class="auther">{{message.User.username}}</p> 
                 <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
-            </span>  
+            </span>  -->
             <div id="oneMess_head">
                 <!-- TITRE DU MESSAGE --> 
                 <span  class="title"><p>{{message.title}}</p></span>  
@@ -27,19 +27,24 @@
             <!-- CORPS DU MESSAGE --> 
             <span  class="mess"><p>{{message.content}}</p></span> 
             <div id="control"> 
-                <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                 <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
+                <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i><p>{{message.likes}}</p></span> 
+                <span @click="deleteMessage(message.id)" class="delete" v-if="user.id == message.UserId"><i class="far fa-trash-alt"></i></span> 
             </div>
             <!-- COMMENTAIRE DU MESSAGE --> 
             <div id="zoneCom">
                 <div id="ajoutCom">
-                <input type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
-                <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
+                    <input type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
+                    <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
                 </div>
                 <ul>
                     <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
-                        <span><p class="commentaire">{{commentaire.content}}</p><p class="timeCom">le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}</p></span>
+                        <span>
+                            <p class="commentaire">{{commentaire.content}}</p>
+                            <p class="timeCom">le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}</p>
+                            <p v-if="user.id == commentaire.UserId" class="modifCom"><i class="far fa-edit"></i></p>
+                            <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId" class="deleteCom"><i class="far fa-trash-alt"></i></p>
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -93,6 +98,11 @@ export default{
             if(confirm('Voulez-vous vraiment supprimer le message?')){
                 this.$store.dispatch('deleteMessage',id);
                 this.$router.push('/messages');
+            }
+        },
+        deleteCom:function(id){
+            if(confirm('Voulez-vous vraiment supprimer le commentaire?')){
+                this.$store.dispatch('deleteCom',id);
             }
         },
         deconnexion:function(){
@@ -221,9 +231,19 @@ margin-right: 5%;
 }
 .commentaire{
     margin-right: auto;
+    flex-wrap: wrap;
+    max-width: 65%;
 }
 .timeCom{
     margin-left: auto;
+}
+.modifCom,
+.deleteCom{
+    margin-left: 1%;
+}
+.modifCom i,
+.deleteCom i{
+    color: #fd2d01;
 }
 /* CSS UPDATE */
 

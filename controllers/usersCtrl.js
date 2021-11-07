@@ -168,7 +168,7 @@ module.exports = {
 
         //récupération de l'utilisateur
         models.User.findOne({
-            attributes: ['id', 'email', 'username', 'userlastname', 'bio', 'profilpic'],
+            attributes: ['id', 'email', 'username', 'userlastname', 'bio', 'profilpic', 'isAdmin'],
             where: { id: userId } //les infos de l'id correspondant à l' userId du token
         }).then(function(user) {
             if (user) {

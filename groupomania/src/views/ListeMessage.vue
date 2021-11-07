@@ -36,8 +36,8 @@
                         <!-- UPDATE DU CORPS DU MESSAGE -->
                         <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-if="mode == 'UPDATE'" v-model="message.content"  type="text"></textarea></span>
                         <div v-if="mode=='LISTEMESSAGE'" id="control"> 
-                            <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                             <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                            <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                             <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
                         </div>
                         <!-- VALID / CANCEL UPDATE -->
@@ -204,18 +204,13 @@ li p{
 }
 #control{
     display: flex;
+    justify-content: space-around;
 }
 .like,.modif,.delete{
     cursor: pointer;
 }
-.like i{
+#control .like i{
     margin-right: 5px;
-}
-.modif{
-    margin-left: 40%;
-}
-.delete{
-    margin-left: 40%;
 }
 
 /* CSS UPDATE */

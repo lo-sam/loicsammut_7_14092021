@@ -35,7 +35,8 @@ const store = createStore({
             userlastname: '',
             email: '',
             bio: '',
-            profilpic: ''
+            profilpic: '',
+            isAdmin: ''
         },
         listeMessage: [],
         message: {},
@@ -267,10 +268,10 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
-        commentaire: ({ commit }, commentaire) => {
+        commentaire: ({ commit }, id) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.post('/message/commentaire/' + commentaire)
+                instance.post('/message/commentaire/' + id)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
@@ -282,6 +283,23 @@ const store = createStore({
                     });
             })
         },
+        deleteCom: ({ commit }, id) => {
+            return new Promise((resolve, reject) => {
+                commit;
+                instance.delete('/message/commentaire/delete/' + id)
+                    .then(function(response) {
+                        commit('setStatus', 'deleted');
+                        resolve(response);
+                        document.location.reload();
+                        console.log('Message supprimé avec succès!')
+                    }).catch(function(err) {
+                        console.log(err + 'catch avant commit');
+                        commit('setStatus', 'error_deleted');
+                        reject(err);
+                    });
+            })
+        },
+
         //ACTION LIKES
         like: ({ commit }, Likes) => {
             return new Promise((resolve, reject) => {

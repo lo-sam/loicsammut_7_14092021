@@ -16,8 +16,8 @@
     </p>
     <input v-model="email" placeholder="E-mail" type="mail" id="email" />
     <span id="nom_prenom">  
-      <input v-model="userlastname" v-if="mode == 'INSCRIPTION'" placeholder="Prénom" type="text" id="userlastname"/>
-      <input v-model="username" v-if="mode == 'INSCRIPTION'" placeholder="Nom" type="text" id="username"/>
+      <input v-model="username" v-if="mode == 'INSCRIPTION'" placeholder="Prénom" type="text" id="username"/>
+      <input v-model="userlastname" v-if="mode == 'INSCRIPTION'" placeholder="Nom" type="text" id="userlastname"/>
     </span>
     <input v-model="bio" v-if="mode == 'INSCRIPTION'" placeholder="Poste" type="text" id="bio"/>
     <input v-model="password" placeholder="Mot de passe" type="password" id="password"/>
