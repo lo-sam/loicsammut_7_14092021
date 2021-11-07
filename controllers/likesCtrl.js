@@ -12,15 +12,14 @@ module.exports = {
         const headerAuth = req.headers['authorization']; //vérification du token
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
         const messageL = req.params.id;
-        const userL = models.Likes.findOne({
+        const userLike = models.Likes.findOne({
             where: { UserId: userId, MessageId: messageL }
         });
-
+        let Likes = req.body.Likes;
         asyncLib.waterfall([
             function(done) {
-                models.Message.findOne({ // on récupère le message
-                    attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
-                    where: { id: req.params.id }
+                models.Message.findOne({
+                    where: { id: req.params.id, userId: userId }
                 }).then(function(messageFound) {
                     done(null, messageFound);
                     console.log("ok pour le message");
@@ -31,34 +30,57 @@ module.exports = {
             },
             function(messageFound, done) {
                 if (messageFound) {
-                    if (userL) {
-                        messageFound.update({ $inc: { Likes: -1 } })
-                        models.Likes.destroy({
-                                where: { UserId: userId, MessageId: messageL },
-                            })
-                            .then(function() {
-                                done(messageFound);
-                                res.status(200).json({ 'message': 'Like annulé' })
-                            })
-                            .catch(function(err) {
-                                res.status(500).json({ message: 'probleme  au niveau du serveur' });
-                                console.log("if" + err);
-                            });
+                    if (userLike) {
+                        messageFound.update({
+                            Likes: (Likes ? Likes : messageFound - 1)
+                        }).then(function() {
+                            done(messageFound);
+                            console.log(messageFound.likes);
+                            models.Likes.destroy({
+                                    where: { UserId: userId, MessageId: messageL },
+                                })
+                                .then(function() {
+                                    res.status(200).json({ 'message': 'Like annulé' })
+                                })
+                                .catch(function(err) {
+                                    res.status(500).json({ 'message': 'probleme  au niveau du serveur' });
+                                    console.log('problème dislike: ' + err);
+                                });
+                        }).catch(function(err) {
+                            console.log('pas ok pour dislike message');
+                            res.status(500).json({ 'error': 'Mise à jour impossible :' + err });
+                        });
                     } else {
-                        models.message.update({ $inc: { Likes: +1 } })
-                        models.Likes.create({ UserId: userId, MessageId: messageL })
-                            .then(function() {
-                                done(messageFound);
-                                res.status(201).json({ 'message': 'Message liké' })
-                            }).catch(function(err) {
-                                res.status(500).json({ message: 'probleme  au niveau du serveur' });
-                                console.log("else" + err);
-                            });
+                        messageFound.update({
+                            Likes: (Likes ? Likes : messageFound + 1)
+                        }).then(function() {
+                            done(messageFound);
+                            console.log(messageFound.likes);
+                            models.Likes.create({
+                                    where: { UserId: userId, MessageId: messageL },
+                                })
+                                .then(function() {
+                                    res.status(200).json({ 'message': 'Message liké' })
+                                })
+                                .catch(function(err) {
+                                    res.status(500).json({ 'message': 'probleme  au niveau du serveur' });
+                                    console.log("if" + err);
+                                });
+                        }).catch(function(err) {
+                            console.log('ok pour like message');
+                            res.status(500).json({ 'error': 'Mise à jour impossible :' + err });
+                        });
                     }
                 } else {
                     res.status(404).json({ 'error': 'Le message n\'a pas été trouvé' });
                 }
+            },
+        ], function(messageFound) {
+            if (messageFound) { // On applique le like
+                return res.status(201).json(messageFound);
+            } else {
+                return res.status(500).json({ 'error': 'Impossible d\'appliquer le like' })
             }
-        ])
+        });
     }
 };
