@@ -2,12 +2,12 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <div id="listeMess">
-            <!-- PROFILE
+            <!-- PROFILE-->
             <span>
                 <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                 <p class="auther">{{message.User.username}}</p> 
                 <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
-            </span>  -->
+            </span>  
             <div id="oneMess_head">
                 <!-- TITRE DU MESSAGE --> 
                 <span  class="title"><p>{{message.title}}</p></span>  
@@ -174,7 +174,10 @@ margin-right: 5%;
 #ajoutMess .ajoutMess{
     margin-left: 5px;
 }
-.auther, .date{
+.auther{
+    margin-top: 30px;
+}
+.date{
     margin-top: 35px;
 }
 .title{

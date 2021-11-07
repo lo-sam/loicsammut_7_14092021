@@ -59,6 +59,7 @@
       updateMessage: function(req, res) {
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+          let fields = req.query.fields; //champs à afficher
 
 
           if (req.params.userId = userId) {
@@ -72,8 +73,9 @@
               asyncLib.waterfall([
                   function(done) {
                       models.Message.findOne({ // on récupère le message
-                          attributes: ['id', 'title', 'content', 'urlmedia', 'userId'],
-                          where: { id: req.params.id }
+                          where: { id: req.params.id },
+                          attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
+                          include: models.User
                       }).then(function(messageFound) {
                           done(null, messageFound);
                           console.log("ok pour le message");

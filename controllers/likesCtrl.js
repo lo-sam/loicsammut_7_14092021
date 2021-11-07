@@ -12,6 +12,7 @@ module.exports = {
         const headerAuth = req.headers['authorization']; //vérification du token
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
         const messageL = req.params.id;
+        let fields = req.query.fields; //champs à afficher
         const userLike = models.Likes.findOne({
             where: { UserId: userId, MessageId: messageL }
         });
@@ -19,7 +20,9 @@ module.exports = {
         asyncLib.waterfall([
             function(done) {
                 models.Message.findOne({
-                    where: { id: req.params.id, userId: userId }
+                    where: { id: req.params.id, userId: userId },
+                    attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
+                    include: models.User
                 }).then(function(messageFound) {
                     done(null, messageFound);
                     console.log("ok pour le message");
