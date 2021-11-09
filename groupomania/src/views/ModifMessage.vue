@@ -15,10 +15,10 @@
         <div id="modifMess">
 
             <!-- UPDATE TITRE DU MESSAGE --> 
-            <input :value="message.title" type="text">
+            <input v-model="message.title" type="text">
 
             <!-- UPDATE DU CORPS DU MESSAGE -->
-            <textarea  rows="6"   id="createContent" :value="message.content"  type="text"></textarea>
+            <textarea  rows="6"   id="createContent" v-model="message.content"  type="text"></textarea>
             <div id="add_btn">
                 <div id="emoji_btn" @click='switchEmoji()'><i class="far fa-laugh-beam"></i></div>
                 <div id="GIF_btn" @click='switchGif()'>GIF</div>
@@ -44,7 +44,7 @@
 
             <!-- UPDATE DU MEDIA -->
             <div v-else id="urlmedia">
-                <input id="createurlmedia" :value="message.urlmedia"  type="text">
+                <input id="createurlmedia" v-model="message.urlmedia"  type="text">
             </div>
 
             <!-- PREVIEW -->
@@ -99,11 +99,18 @@ export default{
         },
         methods:{
         update: function(id){
-            this.$store.dispatch('updateMessage',id,{
-                title: this.title,
-                content: this.content,
-                urlmedia: this.urlmedia
+            const self = this;
+            this.$store.dispatch('updateMessage',{
+                id:id,
+                message:{
+                title: this.message?.title,
+                content: this.message?.content,
+                urlmedia: this.message?.urlmedia
+                }
             }).then(function(){
+              self.$router.push("/messages");
+             console.log('apres'+self.message?.title)
+
                 console.log('maj ok');
             }).catch(function(err){
                 console.log('maj pas ok',err);
@@ -119,7 +126,6 @@ export default{
         getEmoji(emoji){
             this.message.content += emoji;
             this.mode='MODIFMESSAGE';
-            
         },
         switchGif:function(){
             this.mode='GIF';

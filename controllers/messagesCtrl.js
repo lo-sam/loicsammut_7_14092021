@@ -62,7 +62,7 @@
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
           let fields = req.query.fields; //champs à afficher
 
-
+          console.log("*********" + req.body.title);
           if (req.params.userId = userId) {
 
               // Params

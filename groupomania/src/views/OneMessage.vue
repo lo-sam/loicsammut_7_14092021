@@ -2,12 +2,12 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <div id="listeMess">
-            <!-- PROFILE
+            <!-- PROFILE 
             <span>
                 <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                 <p class="auther">{{message.User.username}}</p> 
                 <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
-            </span>  -->
+            </span> -->
             <div id="oneMess_head">
                 <!-- TITRE DU MESSAGE --> 
                 <span  class="title"><p>{{message.title}}</p></span>  
@@ -41,8 +41,8 @@
                     <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
                         <span>
                             <p v-if="mode=='COMMENTAIRE'" class="commentaire">{{commentaire.content}}</p>
-                            <p @click="modifCom(message.id)" v-if="mode=='MODIF'" id="modifCom" >
-                                <input :value="commentaire.content" type="text">
+                            <p v-if="mode=='MODIF'" id="modifCom" >
+                                <input v-model="commentaire.content" type="text">
                             </p>
                             <p @click="modifCom(commentaire.id)" class="modifOK" v-if="mode == 'MODIF'"><i class="far fa-check-circle"></i></p>  
                             <p @click="switchCOM()" class="modifNO" v-if="mode == 'MODIF'"><i class="far fa-times-circle"></i></p>
@@ -69,7 +69,8 @@ export default{
         name:'message',
         data () {
             return {
-                mode: 'COMMENTAIRE'
+                mode: 'COMMENTAIRE',
+                content:''
             }        
         }, 
         mounted: function(){
@@ -87,16 +88,10 @@ export default{
                 messages: 'listeMessage',
                 message: 'message',
                 commentaire:'commentaire',
-                commentaires:'listeCommentaires'
+                commentaires:'listeCommentaires',
             }),
         },
         methods:{
-             switchMESSAGE: function () {
-                this.mode = "MESSAGE";
-        },
-            switchUPDATE: function(){
-                this.mode = "UPDATE";
-        },
         switchModif: function(){
             this.mode = 'MODIF';
         },
@@ -104,18 +99,20 @@ export default{
             this.mode = 'COMMENTAIRE'
         },
         addComment:function(id){
-          //  this.$store.dispatch("getOneMessage",id);
-            this.$store.dispatch("commentaire",id, {
-                content: this.content,
+            this.$store.dispatch("commentaire", {
+                messageId:id,
+                content:this.commentaire?.content
             });
          },
          modifCom:function(id){
-             this.$store.dispatch("getOneMessage",id,{
-                 id: this.message.commentaire.messageId
-             });
+            const self = this;
              this.$store.dispatch('updateCom',id,{
-
-                 content: this.content
+                id:id,
+                content: this.content
+             }).then(function () {
+                //document.location.reload();
+                console.log('addCom: '+self.content);
+                self.switchCOM();
              })
          },
         getUpOneMessage(id){

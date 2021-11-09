@@ -69,6 +69,7 @@ module.exports = {
         const headerAuth = req.headers['authorization']; //vérification du token
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
+        console.log("*********" + req.body.content);
         if (req.params.userId = userId) {
             //Params
             asyncLib.waterfall([
@@ -76,7 +77,7 @@ module.exports = {
                     models.Commentaire.findOne({
                         attributes: ['id', 'userId', 'messageId', 'content'],
                         where: { id: req.params.id },
-                        include: Message
+                        include: models.Message
                     }).then(function(com) {
                         done(null, com);
                         console.log("ok pour le com");

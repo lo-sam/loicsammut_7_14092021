@@ -35,9 +35,8 @@ module.exports = {
                 function(messageFound, done) {
                     if (messageFound) {
                         if (userLike) {
-                            messageFound.update({
-                                likes: --likes
-                            }).then(function() {
+                            likes = likes - 1;
+                            messageFound.update({}).then(function() {
                                 done(messageFound);
                                 console.log(typeOf(likes));
                                 models.Likes.destroy({
@@ -57,9 +56,8 @@ module.exports = {
                                 res.status(500).json({ 'error': 'Mise à jour impossible :' + err });
                             });
                         } else {
-                            messageFound.update({
-                                likes: ++likes
-                            }).then(function() {
+                            likes = likes + 1;
+                            messageFound.update({}).then(function() {
                                 done(messageFound);
                                 console.log(messageFound.likes);
                                 models.Likes.create({

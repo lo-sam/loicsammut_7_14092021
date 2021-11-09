@@ -88,13 +88,17 @@ const store = createStore({
         message: function(state, message) {
             state.message = message;
         },
+        modifMessage: function(state, id, message) {
+            Object.assign(state.listeMessage.find(el => el.id === id), message);
+        },
         listeCommentaires: function(state, listeCommentaires) {
             state.listeCommentaires = listeCommentaires;
         },
-        commentaire: function(state, id, commentaire) {
-            Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
+        commentaire: function(state, commentaire) {
+            state.commentaire = commentaire;
+            // Object.assign(state.listeMessage.find(el => el.id === id), commentaire);
         },
-        modifMessage: function(state, id, commentaire) {
+        modifCom: function(state, id, commentaire) {
             Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
         },
         like: function(state, id, Likes) {
@@ -197,6 +201,7 @@ const store = createStore({
             instance.get('/message/' + id)
                 .then((response) => {
                     commit('message', response.data);
+
                     console.log(response.data)
                 })
                 .catch(function() {});
@@ -204,12 +209,13 @@ const store = createStore({
         message: ({ commit }, listeMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
+                console.log(listeMessage);
                 instance.post('/message/new', listeMessage)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
-                        document.location.reload();
-                        console.log('Message créé avec succès!')
+                        // document.location.reload();
+                        console.log('Message créé avec succès!', response)
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
@@ -219,12 +225,12 @@ const store = createStore({
         updateMessage: ({ commit }, modifMessage) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.put('/message/modif/' + modifMessage)
+                console.log("modifmessage: " + modifMessage.message.title);
+                instance.put('/message/modif/' + modifMessage.id, modifMessage.message)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response)
-                        console.log(response.data);
-                        console.log('Message modifié avec succès!');
+                        console.log('Message modifié avec succès: ', response.data);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
@@ -262,30 +268,31 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
-        commentaire: ({ commit }, id) => {
+        commentaire: ({ commit }, commentaire) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.post('/message/commentaire/' + id)
+                console.log('Commentaire: ', commentaire);
+                instance.post('/message/commentaire/' + commentaire.messageId, commentaire)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
+                        console.log('com ajouté avec succès: ', response.data);
                         document.location.reload();
-                        console.log(response.data);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
                     });
             })
         },
-        updateCom: ({ commit }, id) => {
+        updateCom: ({ commit }, modifCom) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.put('/message/commentaire/modif/' + id)
+                console.log("modifCom: " + modifCom);
+                instance.put('/message/commentaire/modif/' + modifCom, modifCom)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response)
-                        console.log(response.data);
-                        console.log('Commentaire modifié avec succès!');
+                        console.log('Commentaire modifié avec succès!', response.data);
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);
