@@ -96,16 +96,12 @@ const store = createStore({
         },
         commentaire: function(state, commentaire) {
             state.commentaire = commentaire;
-            // Object.assign(state.listeMessage.find(el => el.id === id), commentaire);
         },
         modifCom: function(state, id, commentaire) {
             Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
         },
-        like: function(state, id, Likes) {
-            const index = state.listeMessage.findIndex(el => el.id === id)
-            if (index !== -1) {
-                Object.assign(state.message[index], Likes)
-            }
+        like: function(state, Likes) {
+            state.Likes = Likes;
         },
         deconnexion: function(state) {
             state.user = {
@@ -210,7 +206,7 @@ const store = createStore({
             return new Promise((resolve, reject) => {
                 commit;
                 console.log(listeMessage);
-                instance.post('/message/new', listeMessage)
+                instance.post('/message/new', listeMessage, listeMessage.User)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
@@ -268,6 +264,7 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
+
         commentaire: ({ commit }, commentaire) => {
             return new Promise((resolve, reject) => {
                 commit;
@@ -287,8 +284,8 @@ const store = createStore({
         updateCom: ({ commit }, modifCom) => {
             return new Promise((resolve, reject) => {
                 commit;
-                console.log("modifCom: " + modifCom);
-                instance.put('/message/commentaire/modif/' + modifCom, modifCom)
+                console.log("modifCom: ", modifCom.commentaire.content);
+                instance.put('/message/commentaire/modif/' + modifCom.id, modifCom.commentaire)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response)

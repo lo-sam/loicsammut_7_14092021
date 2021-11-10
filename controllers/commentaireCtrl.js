@@ -77,7 +77,7 @@ module.exports = {
                     models.Commentaire.findOne({
                         attributes: ['id', 'userId', 'messageId', 'content'],
                         where: { id: req.params.id },
-                        include: models.Message
+                        // include: models.Message
                     }).then(function(com) {
                         done(null, com);
                         console.log("ok pour le com");

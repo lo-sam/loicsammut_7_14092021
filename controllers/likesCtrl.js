@@ -36,7 +36,9 @@ module.exports = {
                     if (messageFound) {
                         if (userLike) {
                             likes = likes - 1;
-                            messageFound.update({}).then(function() {
+                            messageFound.update({
+                                likes: (likes ? likes : messageFound.likes)
+                            }).then(function() {
                                 done(messageFound);
                                 console.log(typeOf(likes));
                                 models.Likes.destroy({
@@ -57,7 +59,9 @@ module.exports = {
                             });
                         } else {
                             likes = likes + 1;
-                            messageFound.update({}).then(function() {
+                            messageFound.update({
+                                likes: (likes ? likes : messageFound.likes)
+                            }).then(function() {
                                 done(messageFound);
                                 console.log(messageFound.likes);
                                 models.Likes.create({

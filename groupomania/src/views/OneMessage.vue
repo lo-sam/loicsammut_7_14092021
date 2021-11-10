@@ -34,29 +34,29 @@
             <!-- COMMENTAIRE DU MESSAGE --> 
             <div id="zoneCom">
                 <div id="ajoutCom">
-                    <input type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
+                    <input v-on:keyup.enter="addComment(message.id)" type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
                     <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
                 </div>
                 <ul>
-                    <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
+                    <li class="listCom" v-for="commentaire in message.Commentaires" :key="commentaire.id">
                         <span>
-                            <p v-if="mode=='COMMENTAIRE'" class="commentaire">{{commentaire.content}}</p>
-                            <p v-if="mode=='MODIF'" id="modifCom" >
-                                <input v-model="commentaire.content" type="text">
+                            <p v-show="!commentaire.show"  class="commentaire">{{commentaire.content}}</p>
+                            <p v-show="commentaire.show"  id="modifCom" >
+                                <input v-show="commentaire.show" v-model="commentaire.content" type="text">
                             </p>
-                            <p @click="modifCom(commentaire.id)" class="modifOK" v-if="mode == 'MODIF'"><i class="far fa-check-circle"></i></p>  
-                            <p @click="switchCOM()" class="modifNO" v-if="mode == 'MODIF'"><i class="far fa-times-circle"></i></p>
+                            <p @click="modifCom(commentaire)" class="modifOK" v-show="commentaire.show"><i class="far fa-check-circle"></i></p>  
+                            <p @click="switchCOM(commentaire)" class="modifNO" v-show="commentaire.show"><i class="far fa-times-circle"></i></p>
                             <p class="timeCom">
                                 le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}
                             </p>
-                            <p @click="switchModif()"  v-if="user.id == commentaire.UserId && mode=='COMMENTAIRE'" class="modifCom">
+                            <p @click="switchModif(commentaire)"   v-show="!commentaire.show" class="modifCom">
                                 <i class="far fa-edit"></i>
                             </p>
                             <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId" class="deleteCom">
                                 <i class="far fa-trash-alt"></i>
                             </p>
                         </span>
-                    </li>
+                    </li>   
                 </ul>
             </div>
         </div>
@@ -70,7 +70,10 @@ export default{
         data () {
             return {
                 mode: 'COMMENTAIRE',
-                content:''
+                commentaire:{
+                content:'',
+                show: false
+                }
             }        
         }, 
         mounted: function(){
@@ -87,16 +90,18 @@ export default{
                 user:'userInfos',
                 messages: 'listeMessage',
                 message: 'message',
-                commentaire:'commentaire',
                 commentaires:'listeCommentaires',
             }),
         },
         methods:{
-        switchModif: function(){
-            this.mode = 'MODIF';
+        switchModif: function(commentaire){
+                commentaire.show = true;
+              // this.mode = 'MODIF';
+                console.log(commentaire.show);
         },
-        switchCOM: function(){
-            this.mode = 'COMMENTAIRE'
+        switchCOM: function(commentaire){
+            commentaire.show = false;
+            //document.location.reload();
         },
         addComment:function(id){
             this.$store.dispatch("commentaire", {
@@ -104,15 +109,15 @@ export default{
                 content:this.commentaire?.content
             });
          },
-         modifCom:function(id){
-            const self = this;
-             this.$store.dispatch('updateCom',id,{
-                id:id,
-                content: this.content
+         modifCom:function(commentaire){
+             this.$store.dispatch('updateCom',{
+                id:commentaire.id,
+                commentaire:{
+                    content:commentaire?.content
+                }
              }).then(function () {
                 //document.location.reload();
-                console.log('addCom: '+self.content);
-                self.switchCOM();
+                commentaire.show = false;
              })
          },
         getUpOneMessage(id){
