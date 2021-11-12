@@ -3,7 +3,7 @@
         <!-- MODE LISTE DES MESSAGES -->
         <h1>Liste des messages</h1>
         <router-link to='/message/new'>
-            <button @click="switchMESSAGE()" id="ajoutMess">
+            <button id="ajoutMess">
                 <i class="fas fa-plus-circle"></i>
             <div class="ajoutMess">Ajouter un message</div>
             </button>
@@ -28,7 +28,7 @@
                     </div>  
                     <div id="control"> 
                         <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-edit"></i></span> 
-                        <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                        <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
                         <span class="delete" v-if="user.id == message.UserId || user.isAdmin == 1" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
                     </div>
                 </li>
@@ -87,6 +87,11 @@ export default{
                 this.$store.dispatch('deleteMessage',id);
                 this.$router.push('/messages');
             }
+        },
+        like: function(id){
+            console.log('like');
+            this.$store.dispatch('like',id);
+            
         },
         deconnexion:function(){
             this.$store.commit('deconnexion');

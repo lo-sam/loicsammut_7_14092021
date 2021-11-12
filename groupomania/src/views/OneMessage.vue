@@ -167,6 +167,7 @@ export default{
         like: function(id){
             console.log('like');
             this.$store.dispatch('like',id);
+            this.$forceUpdate();
         }
     }
 }
