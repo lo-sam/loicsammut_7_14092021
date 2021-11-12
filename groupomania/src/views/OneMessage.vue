@@ -27,35 +27,56 @@
             <!-- CORPS DU MESSAGE --> 
             <span  class="mess"><p>{{message.content}}</p></span> 
             <div id="control"> 
-                <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
+                <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-edit"></i></span> 
                 <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i><p>{{message.likes}}</p></span> 
-                <span @click="deleteMessage(message.id)" class="delete" v-if="user.id == message.UserId"><i class="far fa-trash-alt"></i></span> 
+                <span @click="deleteMessage(message.id)" class="delete" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-trash-alt"></i></span> 
             </div>
             <!-- COMMENTAIRE DU MESSAGE --> 
             <div id="zoneCom">
                 <div id="ajoutCom">
                     <input v-on:keyup.enter="addComment(message.id)" type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
+                    <button id="emoji_btn" @click='switchEmoji()'><i class="far fa-laugh-beam"></i></button>
                     <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
                 </div>
+                    <!-- EMOJIS -->
+                    <div v-if="mode=='EMOJIS'" class="emoji">
+                        <div class="unEmoji" v-for="emoji in emojis" :key='emoji.id' @click="getEmoji(emoji.name)">
+                            {{emoji.name}}
+                        </div>
+                    </div>
+
                 <ul>
-                    <li class="listCom" v-for="commentaire in message.Commentaires" :key="commentaire.id">
-                        <span>
+                    <li class="listCom" v-for="commentaire in commentaires" :key="commentaire.id">
+                        <span class="info_commentaires">
+                            <p class="nomCom">{{commentaire.User.username}} : </p>
+                            <p class="timeCom">
+                                le {{commentaire.updatedAt.slice(0,10).split('-').reverse().join('/')}}
+                                à {{commentaire.updatedAt.slice(11,16)}}
+                            </p>
+                        </span>
+                        <div class="commentaires">
                             <p v-show="!commentaire.show"  class="commentaire">{{commentaire.content}}</p>
                             <p v-show="commentaire.show"  id="modifCom" >
-                                <input v-show="commentaire.show" v-model="commentaire.content" type="text">
+                                <input v-on:keyup.enter="modifCom(commentaire)"  v-show="commentaire.show" v-model="commentaire.content" type="text">
                             </p>
                             <p @click="modifCom(commentaire)" class="modifOK" v-show="commentaire.show"><i class="far fa-check-circle"></i></p>  
                             <p @click="switchCOM(commentaire)" class="modifNO" v-show="commentaire.show"><i class="far fa-times-circle"></i></p>
-                            <p class="timeCom">
-                                le {{commentaire.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + commentaire.createdAt.slice(11,16)}}
-                            </p>
-                            <p @click="switchModif(commentaire)"   v-show="!commentaire.show" class="modifCom">
-                                <i class="far fa-edit"></i>
-                            </p>
-                            <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId" class="deleteCom">
-                                <i class="far fa-trash-alt"></i>
-                            </p>
-                        </span>
+                        
+                            <div class="commandeCommentaire">
+                                <p @click="switchModif(commentaire)"   v-if="user.id == commentaire.UserId || user.isAdmin == 1" class="modifCom">
+                                    <i class="far fa-edit"></i>
+                                </p>
+                                <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId || user.isAdmin == 1" class="deleteCom">
+                                    <i class="far fa-trash-alt"></i>
+                                </p>
+                                <p v-if="user.id !== commentaire.UserId" class="pas_modifCom">
+                                    <i class="far fa-edit"></i>
+                                </p>
+                                <p v-if="user.id !== commentaire.UserId" class="pas_deleteCom">
+                                    <i class="far fa-trash-alt"></i>
+                                </p>
+                            </div>
+                        </div>
                     </li>   
                 </ul>
             </div>
@@ -91,17 +112,23 @@ export default{
                 messages: 'listeMessage',
                 message: 'message',
                 commentaires:'listeCommentaires',
+                emojis:'emojis'
             }),
         },
         methods:{
+        switchEmoji:function(){
+            this.mode='EMOJIS';
+        },
+        getEmoji(emoji){
+            this.commentaire.content += emoji;
+            this.mode='COMMENTAIRE';
+        },
         switchModif: function(commentaire){
                 commentaire.show = true;
-              // this.mode = 'MODIF';
                 console.log(commentaire.show);
         },
         switchCOM: function(commentaire){
             commentaire.show = false;
-            //document.location.reload();
         },
         addComment:function(id){
             this.$store.dispatch("commentaire", {
@@ -116,7 +143,6 @@ export default{
                     content:commentaire?.content
                 }
              }).then(function () {
-                //document.location.reload();
                 commentaire.show = false;
              })
          },
@@ -188,6 +214,8 @@ margin-right: 5%;
 #cancelMess i{
     font-size: 25px;
     color: #fd2d01;
+    font-size: 25px;
+    color: #fd2d01;
 }
 
 #cancelMess .cancelMess{
@@ -200,47 +228,30 @@ margin-right: 5%;
     border: 3px solid #fd2d01;
     border-radius: 10px;
 }
-#ajoutMess{
-    margin: 20px auto 10px 20px;
-    display: flex;
-    color: #000;
-}
-#ajoutMess i,
-#cancelMess i{
-    font-size: 25px;
-    color: #fd2d01;
-}
-#ajoutMess .ajoutMess{
-    margin-left: 5px;
-}
 .auther{
     margin-top: 30px;
-}
-.date{
-    margin-top: 35px;
-}
-.title{
-    text-transform: uppercase;
-}
-.auther{
     font-size: 30px;
     margin-left: 5px;
 }
 .date{
+    margin-top: 35px;
     font-size: 16px;
     margin-left: auto;
+}
+.title{
+    text-transform: uppercase;
 }
 .mess{
     padding: 15px;
     padding-top: 5px;
 }
 .urlImg{
-    border: 1px solid rgb(240, 240, 240);
+    border: 3px solid rgb(240, 240, 240);
     border-radius: 10px;
-    padding: 10px;
     margin-bottom: 10px;
 }
 .urlImg img{
+    padding: 10px;
     max-height: 250px;
     max-width: 100%;
     margin: auto;
@@ -255,116 +266,115 @@ margin-right: 5%;
 #control .like i{
     margin-right: 5px;
 }
+
+.unEmoji {
+		cursor: pointer;
+		user-select: none;
+		font-size: 1.5rem;
+		margin: 0 0.5rem;
+		transition: all 0.3s;
+}
+.unEmoji:hover {
+    animation-name: emoji;
+    animation-duration: 0.6s;
+    animation-direction: forwards;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1;
+}
+/* ANIMATIONS */
+@keyframes emoji {
+	25% {
+		transform: rotateZ(90deg) scale(1.5);
+	}
+	50% {
+		transform: rotateZ(0) scale(2);
+	}
+	75% {
+		transform: rotateZ(-90deg) scale(1.5);
+	}
+}
+#GIF_btn{
+    margin-left: 5px;
+}
+#zoneCom .emoji{
+    display: flex;
+    margin: auto;
+    width: 80%;
+    flex-wrap: wrap;
+}
 .listCom{
     list-style: none;
 }
+.listCom span{
+    width: 100%;
+}
+#listeMess .info_commentaires{
+    margin: 20px 0 0 0;
+}
+#listeMess .commentaires{
+width: 100%;
+display: flex;
+padding: 0 15px;
+}
 .commentaire{
-    margin-right: auto;
-    flex-wrap: wrap;
-    max-width: 65%;
+    width: 90%;
 }
 #modifCom{
     width: 65%;
+}
+#listeMess .nomCom{
+    padding-right: 5px;
+    color: #fd2d01;
 }
 .listCom #modifCom input{
     margin-right: auto;
     border-radius: 10px;
 }
+ .modifOK,
+ .modifNO{
+    margin: auto 3px;
+}
  .modifOK i,
  .modifNO i{
-    margin: 0 3px;
     font-size: 25px;
     cursor: pointer;
     color: #fd2d01;
 }
+.commentaire,
+.nomCom{
+    margin: auto 0;
+    display: flex;
+    flex-wrap: wrap;
+}
 .timeCom{
+    margin: auto 0 auto auto;
+    font-size: 15px;
+}
+#listeMess .timeCom .timeCom_date,
+#listeMess .timeCom .timeCom_heure{
+    color: #000;
+    margin: 0;
+    padding: 0;
+}
+.commandeCommentaire{
     margin-left: auto;
+    padding: 5px;
+    display: flex;
 }
 .modifCom,
-.deleteCom{
-    margin-left: 1%;
+.deleteCom,
+.pas_modifCom, 
+.pas_deleteCom{
+    margin:auto 0;
+    padding: 5px;
 }
 .modifCom i,
 .deleteCom i{
     color: #fd2d01;
 }
-/* CSS UPDATE */
-
-.update{
-    margin: auto;
-    margin-bottom: 20px;
-}
-.updateMess{
-    width: 50%;
-    padding-left: 1%;
-    color: #000;
-    font-size: 20px;
-    border: 1px solid #fd2d01;
-    border-radius: 5px;
-    color: #000;
-
-}
-.updateMessMedia{
-    flex-direction: column;
-    margin: auto;
-    margin-bottom: 20px;
-}
-#urlmedia button{
-    margin-left: 20px;
-    border: 1px solid #fd2d01;
-    border-radius: 5px;
-    padding: 1px 2px;
-}
-#btn_updateMess{
-  margin: 30px auto;
-  position: relative;
-  display: inline-block;
-  padding: 15px 30px;
-  text-decoration: none;
-  overflow: hidden;
-  transition: 0.2s;
-  cursor: pointer;
-  border: solid 3px #fd2d01;
-  border-radius: 5px;
-}
-#btn_updateMess:hover{
-  color: #000;
-  background-color: #fd2d01;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #fd2d01, 0 0 40px #fd2d01, 0 0 80px #fd2d01;
-  transition: 1s;
-  transition-delay: 0.1s;
-}
-
-#controlUpdate{
-    display: flex;
-    margin: auto;
-}
-#controlUpdate #cancelUpdate,
-#controlUpdate #validUpdate{
-    border: 1px solid rgb(240, 240, 240);
-    border-radius: 15px;
-    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
-    box-sizing: border-box;
-    padding: 20px 20px;
-}
-
-#controlUpdate #cancelUpdate{
-   margin: 20px auto 20px 20%;
-}
-
-#controlUpdate #validUpdate{
-    margin-right: 20%;
-}
-
-#controlUpdate #validUpdate i{
-    color: green;
-}
-
-#controlUpdate #validUpdate i,
-#controlUpdate #cancelUpdate i{
-    padding: 0 15px;
-    font-size: 25px;
+.pas_modifCom i,
+.pas_deleteCom i{
+    color:#fff;
 }
 
 #zoneCom{
@@ -378,43 +388,44 @@ margin-right: 5%;
     width: 90%;
     margin: 5px auto;
 }
-
 #ajoutCom{
-    width: 90%;
+    display: flex;
+    width: 85%;
     margin: 20px auto;
 }
-
+.commentaires #emoji_btn,
+#ajoutCom #emoji_btn{
+    border: 1px solid rgba(0,0,0,0.151);
+    padding: 0 5px;
+    font-size: 30px;
+}
 #ajoutCom .btn--com{
     color: #000;
     font-size: 20px;
     width: 10%;
     height: 40px;
-    border: 1px solid rgb(240, 240, 240);
+    border: 1px solid rgba(0,0,0,0.151);
     border-radius: 0 10px 10px 0;
     outline: none;
     padding: 0 5px;
     margin: auto;
     box-sizing: border-box;
-    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
 }
-
 #ajoutCom .btn--com:hover{
   color: rgba(253, 45, 1);
   transition: 1s;
   transition-delay: 0.1s;
 }
-
 #zoneCom input{
     color: #000;
     font-size: 20px;
     width: 90%;
     height: 40px;
-    border: 1px solid rgb(240, 240, 240);
+    border: 1px solid rgba(0,0,0,0.151);
     border-radius: 10px 0 0 10px;
     outline: none;
     padding-left: 5px;
     margin: auto;
     box-sizing: border-box;
-    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
 }
 </style>

@@ -13,13 +13,14 @@
           // Getting auth header
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
+          let monImage = "";
 
-
+          if (req.file) { monImage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` }
           // Params
           const message = { // On créé un objet message
               title: req.body.title,
               content: req.body.content,
-              urlmedia: req.body.urlmedia, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              urlmedia: req.body.urlmedia || monImage, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
               UserId: userId
           };
 
@@ -40,7 +41,7 @@
               models.Message.findOne({ // On cherche le message grace à son id
                   where: { id: req.params.id },
                   attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-                  include: [models.User, models.Commentaire]
+                  include: [models.User, models.Commentaire, models.Likes]
 
               }).then(function(message) {
                   if (message) {
@@ -61,15 +62,11 @@
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
           let fields = req.query.fields; //champs à afficher
-
           if (req.params.userId = userId) {
-
               // Params
-
               let title = req.body.title;
               let content = req.body.content;
               let urlmedia = req.body.urlmedia; //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`;
-
               asyncLib.waterfall([
                   function(done) {
                       models.Message.findOne({ // on récupère le message
@@ -125,7 +122,7 @@
               //controle de conformité
               order: [(order != null) ? order.split(':') : ['id', 'DESC']],
               attributes: (fields !== '*' && fields != null) ? fields.split(',') : null,
-              include: [models.User, models.Commentaire]
+              include: [models.User, models.Commentaire, models.Likes]
 
           }).then(function(messages) {
               if (messages) { //affichage des messages

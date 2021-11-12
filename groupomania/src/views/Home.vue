@@ -75,7 +75,7 @@ export default {
           password: this.password,
         })
         .then(function () {
-          self.$router.push("/MESSAGES");
+          self.$router.push("/messages");
         })
         .catch(function (err) {
           console.log(err);

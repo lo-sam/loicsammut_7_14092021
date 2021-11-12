@@ -9,7 +9,7 @@
             </button>
         </router-link>
         <div id="listeMess">
-            <ul >
+            <ul>
                 <li :key="key" v-for="(message, key) in messages" >
                     <div @click="getOneMessage(message.id)"> 
                         <span>
@@ -18,42 +18,21 @@
                             <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.createdAt.slice(11,16)}}  </p>
                         </span> 
                         <!-- TITRE DU MESSAGE --> 
-                        <span v-if="mode == 'LISTEMESSAGE'" class="title"><p>{{message.title}}</p></span>  
-                        <!-- UPDATE TITRE DU MESSAGE --> 
-                        <span v-if="mode == 'UPDATE'" class="updateMess"><input v-model="message.title" type="text"></span>  
+                        <span class="title"><p>{{message.title}}</p></span>  
                         <!-- MEDIA DU MESSAGE --> 
                         <span v-if="message.urlmedia !== null" class="urlImg">
                             <img v-bind:src="message.urlmedia">
                         </span> 
-                        <!-- UPDATE DU MEDIA -->
-                        <span class="updateMessMedia" v-if="mode == 'UPDATE'" id="urlmedia">
-                        <input class="updateMess" v-if="mode == 'UPDATE'" id="createurlmedia" v-model="message.urlmedia"  type="text">
-                        <input class="updateMess" v-if="mode == 'UPDATE'" type="file" accept="image/*"  @change="urlmedia" />
-                        </span> 
                         <!-- CORPS DU MESSAGE --> 
-                        <span v-if="mode == 'LISTEMESSAGE'" class="mess"><p>{{message.content}}</p></span> 
-                        </div>  
-                        <!-- UPDATE DU CORPS DU MESSAGE -->
-                        <span  class="update"><textarea class="updateMess" rows="3"   id="createContent" v-if="mode == 'UPDATE'" v-model="message.content"  type="text"></textarea></span>
-                        <div v-if="mode=='LISTEMESSAGE'" id="control"> 
-                            <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId"><i class="far fa-edit"></i></span> 
-                            <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
-                            <span class="delete" v-if="user.id == message.UserId" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
-                        </div>
-                        <!-- VALID / CANCEL UPDATE -->
-                        <div id="controlUpdate" v-else>
-                            <span id="cancelUpdate" @click="switchLISTEMESSAGE()">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
-                            <span id="validUpdate">
-                                <i class="fas fa-check-circle" @click="update()"></i>
-                            </span>
-                        </div>                     
+                        <span class="mess"><p>{{message.content}}</p></span> 
+                    </div>  
+                    <div id="control"> 
+                        <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-edit"></i></span> 
+                        <span class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                        <span class="delete" v-if="user.id == message.UserId || user.isAdmin == 1" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
+                    </div>
                 </li>
             </ul>
-        </div>
-        <div>
-
         </div>
     </div>
 </template>
@@ -84,18 +63,12 @@ export default{
             }),
         },
         methods:{
-            getOneMessage(id){
-                this.$router.push(`/message/${id}`);
+        getOneMessage(id){
+            this.$router.push(`/message/${id}`);
             },
-            getUpOneMessage(id){
-                this.$router.push(`/message/modif/${id}`);
+        getUpOneMessage(id){
+            this.$router.push(`/message/modif/${id}`);
             },
-            switchMESSAGE: function () {
-                this.mode = "MESSAGE";
-        },
-            switchLISTEMESSAGE: function () {
-                this.mode = "LISTEMESSAGE";
-        },
         update: function () {
         const self = this;
         this.$store
@@ -192,7 +165,7 @@ li p{
     padding-top: 5px;
 }
 .urlImg{
-    border: 1px solid rgb(240, 240, 240);
+    border: 3px solid rgb(240, 240, 240);
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 10px;

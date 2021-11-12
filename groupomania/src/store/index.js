@@ -316,14 +316,13 @@ const store = createStore({
         },
 
         //ACTION LIKES
-        like: ({ commit }, Likes) => {
+        like: ({ commit }, likes) => {
             return new Promise((resolve, reject) => {
                 commit;
-                instance.post('/message/' + Likes + '/like')
+                instance.post('/message/' + likes + '/like')
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
-                        console.log('like ok');
                     }).catch(function(err) {
                         commit('setStatus', 'error_create');
                         reject(err);

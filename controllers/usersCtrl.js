@@ -38,7 +38,7 @@ module.exports = {
         }
         //caractères et longueur du password conforme au REGEX
         if (!PASSWORD_REGEX.test(password)) {
-            return res.status(400).json({ 'error': 'Le mot de passe non valide : il doit comporter entre 4 et 8 caractères et inclure un chiffre.' })
+            return res.status(400).json({ 'error': 'Le mot de passe non valide : il doit comporter entre 8 et 20 caractères et inclure un chiffre.' })
         }
 
         //exécuter des fonction en cascade

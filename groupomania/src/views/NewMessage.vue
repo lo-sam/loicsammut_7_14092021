@@ -34,7 +34,7 @@
             <!-- GIPHY -->
             <div  v-if="mode=='GIF'">
                 <div id="gif-search">
-                    <input id="input_Giphy" class="newMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
+                    <input v-on:keyup.enter="getGifs()" id="input_Giphy" class="newMess" v-model="searchTerm" placeholder="Saisir le Gif recherché" type="text">
                     <button id="button_Giphy" class="newMess" @click="getGifs()">GIF</button>
                 </div>
                 <div class="gif-container">
