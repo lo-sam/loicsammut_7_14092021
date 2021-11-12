@@ -15,7 +15,7 @@
                         <span>
                             <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
                             <p class="auther">{{message.User.username}}</p> 
-                            <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.createdAt.slice(11,16)}}  </p>
+                            <p class="date">le {{message.createdAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
                         </span> 
                         <!-- TITRE DU MESSAGE --> 
                         <span class="title"><p>{{message.title}}</p></span>  

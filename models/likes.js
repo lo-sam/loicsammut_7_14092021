@@ -26,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
     Likes.init({
         userId: DataTypes.INTEGER,
         messageId: DataTypes.INTEGER,
-        likes: DataTypes.INTEGER
     }, {
         sequelize,
         modelName: 'Likes',
