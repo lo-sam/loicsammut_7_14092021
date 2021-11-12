@@ -90,7 +90,6 @@ export default {
           userlastname: this.userlastname,
           password: this.password,
           bio: this.bio,
-          profilpic: this.profilpic
         })
         .then(function () {
           self.connexion();

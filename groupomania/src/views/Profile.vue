@@ -13,7 +13,6 @@
             <span class="userlastname">Nom: <p id="userlastname">{{user.userlastname}}</p><p v-if="user.isAdmin == 1">(Administrateur)</p></span> 
             <span class="username">Prénom: <p>{{user.username}}</p></span> 
             <span class="bio">Poste dans l'entreprise: <p>{{user.bio}}</p></span> 
-            <span class="email">Adresse mail: <p>{{user.email}}</p></span>
         </div>      
         <div v-if="mode == 'PROFIL'" class="photo">
             <span class="profilpic"><img :src="user.profilpic" alt="photo de profil"></span>

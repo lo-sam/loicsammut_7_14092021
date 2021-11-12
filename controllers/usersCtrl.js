@@ -1,10 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwtUtils = require('../utils/jwt.utils');
 const models = require('../models');
-
-const User = models.user;
-const jwt = require('jsonwebtoken');
-
+const CryptoJS = require('crypto-js');
+const key = 'gdfg1d32g1szgz651gzz1zge';
 const asyncLib = require('async');
 const fs = require('fs');
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -47,7 +45,7 @@ module.exports = {
                 //vérification de la présence de l'utilisateur dans la BD
                 models.User.findOne({
                         attributes: ['email'],
-                        where: { email: email }
+                        where: { email: CryptoJS.SHA256(req.body.email, key).toString() }
                     })
                     .then(function(userFound) {
                         done(null, userFound);
@@ -70,7 +68,7 @@ module.exports = {
             function(userFound, bcryptedPassword, done) {
                 //création d'un nouvel utilisateur
                 const NewUser = models.User.create({
-                        email: email,
+                        email: CryptoJS.SHA256(req.body.email, key).toString(),
                         username: username,
                         userlastname: userlastname,
                         password: bcryptedPassword,
@@ -116,7 +114,7 @@ module.exports = {
             function(done) {
                 //vérification de la présence de l'utilisateur dans la BD
                 models.User.findOne({
-                        where: { email: email }
+                        where: { email: CryptoJS.SHA256(req.body.email, key).toString() }
                     })
                     .then(function(userFound) {
                         done(null, userFound);
