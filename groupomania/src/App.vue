@@ -2,13 +2,13 @@
   <body>
     <main>
       <nav>
-        <router-link to="/messages">
+        <router-link class="corp" to="/">
           <div id="corp">
             <img id="logo" src="./assets/icon.png" alt="logo Groupomania" />
             <h1>Groupomania</h1>
           </div>
         </router-link>
-        <div v-if='user.userlastname' id="burger">
+        <div id="burger">
           <input type="checkbox" id="burger-shower" class="burger-shower">
           <label for="burger-shower" class="hamburger">
               <i class="fas fa-bars"></i>        
@@ -20,9 +20,6 @@
           </ul>
         </div>
       </nav>
-      <div  v-if='user.userlastname' id="user_menu">
-        Bonjour<span class="userLogged">{{user.username}}</span><span class="userlastnameLogged"> {{user.userlastname}}</span><span class="isAdmin" v-if="user.isAdmin == 1">(Administrateur)</span>
-      </div>
       <router-view></router-view>
     </main>
   </body>
@@ -34,7 +31,7 @@ export default {
   name: "Profile",
   mounted: function () {
     if (this.$store.state.user.userId == -1) {
-      this.$router.push("/");
+      this.$router.push("/auth");
       return;
     }
     this.$store.dispatch("getUserInfos");
@@ -48,13 +45,13 @@ export default {
   methods: {
     deconnexion: function () {
       this.$store.commit("deconnexion");
-      this.$router.push("/");
+      this.$router.push("/auth");
     },
     goProfile:function(){
       this.$router.push('/PROFILE');
     },
     goMessage:function(){
-      this.$router.push('/messages');
+      this.$router.push('/');
     }
   },
 };
@@ -70,12 +67,11 @@ export default {
   box-sizing: border-box;
 }
 body {
-  background-color: #fff;
   color: #000;
   justify-content: center;
   align-items: center;
-  display: flex;
   min-height: auto;
+  margin: auto;
 }
 
 a {
@@ -83,14 +79,22 @@ a {
 }
 
 main {
-  width: 1200px;
+    display: flex;
+  max-width: 1200px;
+  flex-wrap: wrap;
+
   margin: auto;
+  background-color: #fff;
 }
 
 nav {
   display: flex;
+  width: 100%;
 }
 
+nav .corp{
+  width: 50%;
+}
 #corp {
   display: flex;
 }
@@ -132,13 +136,16 @@ h1 {
 }
 #burger {
   position: relative;
-  margin-left: auto;
   padding: 0;
   list-style: none;
   height: 53px;
   width: 44px;
-  top: 12px;
-  left: -39px;
+  top: 0;
+  left: 42%;
+  margin: 24px auto 0 0;
+  list-style: none;
+  display: flex;
+  justify-content: end;
 }
 
 .burger-shower {
@@ -223,5 +230,16 @@ border-radius: 10px 0 0 0;
 
 #ico_mess {
   border-radius:  0;
+}
+
+@media (max-width: 500px)
+{
+h1{
+  font-size: 30px;
+  padding-top: 22px;
+}
+#burger{
+  left:30%
+}
 }
 </style>

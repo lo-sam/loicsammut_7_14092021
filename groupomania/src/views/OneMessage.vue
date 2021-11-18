@@ -2,17 +2,11 @@
     <div id="listeMessage">
         <!-- MODE LISTE DES MESSAGES -->
         <div id="listeMess">
-            <!-- PROFILE 
-            <span>
-                <img class="photoP" :src="message.User.profilpic" alt="photo de profil">    
-                <p class="auther">{{message.User.username}}</p> 
-                <p class="date">le {{message.updatedAt.slice(0,10).split('-').reverse().join('/') + ' à ' + message.updatedAt.slice(11,16)}}  </p>
-            </span> -->
             <div id="oneMess_head">
                 <!-- TITRE DU MESSAGE --> 
                 <span  class="title"><p>{{message.title}}</p></span>  
                 <div id="cancelMessRight">
-                    <router-link to='/messages'>
+                    <router-link to='/'>
                         <button id="cancelMess">
                             <i class="fas fa-arrow-circle-left"></i>
                             <div class="cancelMess">Retour</div>
@@ -21,14 +15,15 @@
                 </div>
             </div>
             <!-- MEDIA DU MESSAGE --> 
-            <span v-if="message.urlmedia !== null" class="urlImg">
+            <span v-if="message.urlmedia !== ''" class="urlImg">
                 <img v-bind:src="message.urlmedia">
             </span> 
             <!-- CORPS DU MESSAGE --> 
             <span  class="mess"><p>{{message.content}}</p></span> 
+            <!-- CONTROLE DU MESSAGE --> 
             <div id="control"> 
                 <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-edit"></i></span> 
-                <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i><p>{{message.likes}}</p></span> 
+                <span @click="like(message.id)" class="like"><i class="far fa-heart"></i><p>{{message.likes}}</p></span> 
                 <span @click="deleteMessage(message.id)" class="delete" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-trash-alt"></i></span> 
             </div>
             <!-- COMMENTAIRE DU MESSAGE --> 
@@ -37,6 +32,7 @@
                     <input v-on:keyup.enter="addComment(message.id)" type="text" v-model="commentaire.content" placeholder="ajouter un commentaire ici">
                     <button id="emoji_btn" @click='switchEmoji()'><i class="far fa-laugh-beam"></i></button>
                     <button @click="addComment(message.id)" class="btn--com">Envoyer</button>
+                    <button @click="addComment(message.id)" class="btn--com_small"><i class="far fa-check-circle"></i></button>
                 </div>
                     <!-- EMOJIS -->
                     <div v-if="mode=='EMOJIS'" class="emoji">
@@ -59,20 +55,15 @@
                             <p v-show="commentaire.show"  id="modifCom" >
                                 <input v-on:keyup.enter="modifCom(commentaire)"  v-show="commentaire.show" v-model="commentaire.content" type="text">
                             </p>
-                            <p @click="modifCom(commentaire)" class="modifOK" v-show="commentaire.show"><i class="far fa-check-circle"></i></p>  
-                            <p @click="switchCOM(commentaire)" class="modifNO" v-show="commentaire.show"><i class="far fa-times-circle"></i></p>
-                        
+                            <div id="btnModif">
+                                <p @click="modifCom(commentaire)" class="modifOK" v-show="commentaire.show"><i class="far fa-check-circle"></i></p>  
+                                <p @click="switchCOM(commentaire)" class="modifNO" v-show="commentaire.show"><i class="far fa-times-circle"></i></p>
+                            </div>
                             <div class="commandeCommentaire">
                                 <p @click="switchModif(commentaire)"   v-if="user.id == commentaire.UserId || user.isAdmin == 1" class="modifCom">
                                     <i class="far fa-edit"></i>
                                 </p>
                                 <p @click="deleteCom(commentaire.id)" v-if="user.id == commentaire.UserId || user.isAdmin == 1" class="deleteCom">
-                                    <i class="far fa-trash-alt"></i>
-                                </p>
-                                <p v-if="user.id !== commentaire.UserId" class="pas_modifCom">
-                                    <i class="far fa-edit"></i>
-                                </p>
-                                <p v-if="user.id !== commentaire.UserId" class="pas_deleteCom">
                                     <i class="far fa-trash-alt"></i>
                                 </p>
                             </div>
@@ -99,18 +90,19 @@ export default{
         }, 
         mounted: function(){
             let id = this.$route.params.id;
-            if(this.$store.state.user.userId == -1){
-                this.$router.push('/');
-                return;
-            }      
             this.$store.dispatch('getOneMessage', id);  
             this.$store.dispatch('getListeCom', id);
+
+            if(this.$store.state.user.userId == -1){
+                this.$router.push('/auth');
+                return;
+            }
         },
        computed:{
             ...mapState({
                 user:'userInfos',
-                messages: 'listeMessage',
                 message: 'message',
+                Likes: 'Likes',
                 commentaires:'listeCommentaires',
                 emojis:'emojis'
             }),
@@ -152,7 +144,7 @@ export default{
         deleteMessage:function(id){
             if(confirm('Voulez-vous vraiment supprimer le message?')){
                 this.$store.dispatch('deleteMessage',id);
-                this.$router.push('/messages');
+                this.$router.push('/');
             }
         },
         deleteCom:function(id){
@@ -160,14 +152,10 @@ export default{
                 this.$store.dispatch('deleteCom',id);
             }
         },
-        deconnexion:function(){
-            this.$store.commit('deconnexion');
-            this.$router.push('/');
-        },
         like: function(id){
             console.log('like');
+
             this.$store.dispatch('like',id);
-            this.$forceUpdate();
         }
     }
 }
@@ -175,18 +163,23 @@ export default{
 
 <style scoped>
 /* CSS LISTE MESSAGE */
-#listeMess{
+#listeMessage{
     color: #000;
     display: flex;
     flex-direction: column;
     margin: 50px auto;
-    list-style: none;
     padding: 30px;
     font-size: 20px;
     width: 90%;
-    margin-bottom: 30px;
+    border: 3px solid #fd2d01;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+#listeMess{
+    padding: 30px;
     border-top: 1px solid rgb(240, 240, 240);
-    border-radius: 10px;
+    border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 #listeMess span{
@@ -320,8 +313,11 @@ padding: 0 15px;
 .commentaire{
     width: 90%;
 }
+#btnModif{
+    display: flex;
+}
 #modifCom{
-    width: 65%;
+    width: 80%;
 }
 #listeMess .nomCom{
     padding-right: 5px;
@@ -343,7 +339,6 @@ padding: 0 15px;
 }
 .commentaire,
 .nomCom{
-    margin: auto 0;
     display: flex;
     flex-wrap: wrap;
 }
@@ -403,7 +398,7 @@ padding: 0 15px;
 #ajoutCom .btn--com{
     color: #000;
     font-size: 20px;
-    width: 10%;
+    width: 15%;
     height: 40px;
     border: 1px solid rgba(0,0,0,0.151);
     border-radius: 0 10px 10px 0;
@@ -417,6 +412,9 @@ padding: 0 15px;
   transition: 1s;
   transition-delay: 0.1s;
 }
+#ajoutCom .btn--com_small{
+    display: none;
+}
 #zoneCom input{
     color: #000;
     font-size: 20px;
@@ -428,5 +426,66 @@ padding: 0 15px;
     padding-left: 5px;
     margin: auto;
     box-sizing: border-box;
+}
+@media (max-width: 900px)
+{
+    #listeMess{
+        padding: 2px;
+    }
+    .urlImg{
+        border: none;
+    }
+    .urlImg img{
+        border-radius: 15px;
+        padding: 0;
+    }
+    #zoneCom input{
+        width: 90%;
+    }
+    #ajoutCom{
+        width: 90%;
+    }
+    #ajoutCom #emoji_btn{
+        font-size: 20px;
+    }
+    #ajoutCom .btn--com{
+        display: none;
+    }
+    #ajoutCom .btn--com_small{
+        display: inline;
+        color: #000;
+        font-size: 20px;
+        width: 15%;
+        height: 40px;
+        border: 1px solid rgba(0,0,0,0.151);
+        border-radius: 0 10px 10px 0;
+        outline: none;
+        padding: 0 5px;
+        margin: auto;
+        box-sizing: border-box;
+    }
+    #modifCom {
+        width: 80%;
+    }
+    #zoneCom input{
+        width: 100%;
+    }
+}
+@media(max-width:768px)
+{
+    .commentaires{
+        flex-direction: column;
+    }
+    #modifCom{
+        width: 100%;
+    }
+    #btnModif{
+        margin: 15px auto 0 auto;
+    }
+}
+@media(max-width:500px){
+    .commandeCommentaire{
+        margin: 0 auto;
+    }
 }
 </style>

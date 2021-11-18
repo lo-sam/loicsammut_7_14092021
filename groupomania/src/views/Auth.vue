@@ -48,17 +48,19 @@ export default {
       userlastname:'',
       password: "",
       bio: "",
-      profilpic:""
+      profilpic:"",
     };
   },
   mounted: function () {
     if (this.$store.state.user.userId != -1) {
-      this.$router.push("/");
+      this.$router.push("/auth");
       return;
     }
   },
   computed: {
-    ...mapState(["status"]),
+    ...mapState({
+      status:"",
+      }),
   },
   methods: {
     switchINSCRIPTION: function () {
@@ -75,7 +77,7 @@ export default {
           password: this.password,
         })
         .then(function () {
-          self.$router.push("/messages");
+          self.$router.push("/");
         })
         .catch(function (err) {
           console.log(err);
@@ -208,5 +210,17 @@ input[type="reset"] {
 .err_connex {
   margin: 0 auto;
   color: #fd2d01;
+}
+@media(max-width:900px)
+{
+  #connex{
+    width: 90%;
+  }
+  #connex input{
+    width: 100%;
+  }
+  #nom_prenom{
+    flex-direction: column;
+  }
 }
 </style>

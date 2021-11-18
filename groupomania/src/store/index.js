@@ -36,12 +36,14 @@ const store = createStore({
             email: '',
             bio: '',
             profilpic: '',
-            isAdmin: ''
+            isAdmin: '',
         },
+        Likes: {},
         listeMessage: [],
         message: {},
         listeCommentaires: [],
         commentaire: {},
+        show: false,
         emojis: [
             { id: 1, name: '😀' },
             { id: 2, name: '😁' },
@@ -100,7 +102,7 @@ const store = createStore({
         modifCom: function(state, id, commentaire) {
             Object.assign(state.listeCommentaires.find(el => el.id === id), commentaire);
         },
-        like: function(state, Likes) {
+        Likes: function(state, Likes) {
             state.Likes = Likes;
         },
         deconnexion: function(state) {
@@ -193,20 +195,23 @@ const store = createStore({
                     console.log('pas ok');
                 });
         },
-        getOneMessage: ({ commit }, id) => {
-            instance.get('/message/' + id)
+        getOneMessage: ({ commit }, message) => {
+            instance.get('/message/' + message)
                 .then((response) => {
-                    commit('message', response.data);
-
-                    console.log(response.data)
+                    commit('message', response.data, (oneMessage) => {
+                        return {
+                            ...oneMessage
+                        }
+                    });
+                    console.log(response.data);
                 })
                 .catch(function() {});
         },
-        message: ({ commit }, listeMessage) => {
+        message: ({ commit }, message) => {
             return new Promise((resolve, reject) => {
                 commit;
-                console.log(listeMessage);
-                instance.post('/message/new', listeMessage, listeMessage.User)
+                console.log(message);
+                instance.post('/message/new', message, message.User)
                     .then(function(response) {
                         commit('setStatus', 'created');
                         resolve(response);
@@ -316,19 +321,16 @@ const store = createStore({
         },
 
         //ACTION LIKES
-        like: ({ commit }, likes) => {
-            return new Promise((resolve, reject) => {
-                commit;
-                instance.post('/message/' + likes + '/like')
-                    .then(function(response) {
-                        commit('setStatus', 'created');
-                        resolve(response);
-                    }).catch(function(err) {
-                        commit('setStatus', 'error_create');
-                        reject(err);
-                    });
-            })
+        like: ({ commit }, Likes) => {
+            instance.post('/message/' + Likes + '/like')
+                .then(function() {
+                    commit('setStatus', 'uploaded');
+                    location.reload();
+                }).catch(function(err) {
+                    console.log(err);
+                });
         }
+
     }
 })
 

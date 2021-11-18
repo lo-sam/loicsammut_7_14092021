@@ -184,7 +184,7 @@ module.exports = {
         const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
 
         let bio = req.body.bio;
-        let profilpic = req.body.profilpic; //`${req.protocol}://${req.get('host')}/images/${req.body.file.filename}`;
+        let profilpic = req.body.profilpic;
 
         asyncLib.waterfall([
             function(done) {

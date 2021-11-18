@@ -1,10 +1,9 @@
 <template>
     <div id="listeMessage">
-        <!-- MODE LISTE DES MESSAGES -->
         <div id="modifMess_head">
             <h1>Modifer le message:</h1>
             <div id="cancelMessRight">
-                <router-link to='/messages'>
+                <router-link to='/'>
                     <button id="cancelMess">
                         <div class="cancelMess">Annuler</div>
                         <i class="fas fa-times-circle"></i>
@@ -84,7 +83,7 @@ export default{
          mounted: function(){
             let id = this.$route.params.id;
             if(this.$store.state.user.userId == -1){
-                this.$router.push('/');
+                this.$router.push('/auth');
                 return;
             }        
             this.$store.dispatch('getOneMessage',id);
@@ -108,17 +107,13 @@ export default{
                 urlmedia: this.message?.urlmedia
                 }
             }).then(function(){
-              self.$router.push("/messages");
+              self.$router.push("/");
              console.log('apres'+self.message?.title)
 
                 console.log('maj ok');
             }).catch(function(err){
                 console.log('maj pas ok',err);
             })
-        },
-        deconnexion:function(){
-            this.$store.commit('deconnexion');
-            this.$router.push('/');
         },
         switchEmoji:function(){
             this.mode='EMOJIS';
@@ -420,5 +415,62 @@ margin-right: 5%;
   box-shadow: 0 0 10px #fd2d01, 0 0 40px #fd2d01, 0 0 80px #fd2d01;
   transition: 1s;
   transition-delay: 0.1s;
+}
+@media (max-width: 900px)
+{
+    #modifMess input,
+    #modifMess textarea{
+        width: 100%;
+    }
+    #urlmedia input{
+        margin-left: 0;
+    }
+    #modifMess .emoji{
+        width: 100%;
+    }
+    #gif-search{
+        width: 100%;
+    }
+    #gif{
+        width: 120px;
+        height: 120px;
+    }
+}
+@media (max-width: 500px)
+{
+    #listeMessage{
+        padding: 5px;
+    }
+    #listeMessage h1{
+        font-size: 20px;
+        padding-top: 30px;
+    }
+    #modifMess_head button{
+        margin: 30px 0 0 0;
+    }
+    #modifMess input,
+    #modifMess textarea{
+        width: 100%;
+    }
+    #urlmedia input{
+        margin-left: 0;
+    }
+    #modifMess .emoji{
+        width: 100%;
+    }
+    #gif-search{
+        width: 100%;
+    }
+    #gif{
+        width: 90px;
+        height: 90px;
+    }
+@media(max-width:375px)
+{
+    #cancelMessRight{
+        margin-right: 1%;
+    }
+
+}
 }
 </style>

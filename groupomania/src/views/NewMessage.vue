@@ -4,7 +4,7 @@
         <span id="createMess_head">
             <h1>Ecrire un message</h1>
             <div id="cancelMessRight">
-                <router-link to='/messages'>
+                <router-link to='/'>
                     <button id="cancelMess">
                         <div class="cancelMess">Annuler</div>
                         <i class="fas fa-times-circle"></i>
@@ -45,12 +45,20 @@
             <!-- MEDIA -->
             <div v-else id="urlmedia">
                 <input  id="createurlmedia" v-model="urlmedia" placeholder="Entrez l'URL d'une image" type="text">
-              <!--  <input @change="urlmedia" type="file" name="image"  accept=".jpg, .jpeg, .gif, .png" />  -->
             </div> 
+
+            <!-- PREVIEW -->
+            <div v-if="urlmedia !== ''"  id="preview">
+                <p>Aperçu:</p>
+                <span class="urlImg">
+                    <img v-bind:src="urlmedia">
+                </span> 
+            </div>
+
 
             <!-- BOUTON VALIDER-->
             <div id="btn_center">
-                <router-link to='/messages'>
+                <router-link to='/'>
                     <button id="btn_createMess" v-if="title!='' && content!=''" @click="envMessage()">
                         Envoyer message
                     </button>
@@ -78,7 +86,7 @@ export default{
         },
          mounted: function(){
             if(this.$store.state.user.userId == -1){
-                this.$router.push('/');
+                this.$router.push('/auth');
                 return;
             }            
             this.$store.dispatch('getListeMessage');
@@ -92,7 +100,7 @@ export default{
             }),
         },
         methods:{
-        envMessage: function(){
+    envMessage: function(){
             const self = this;
             this.$store
             .dispatch('message',{
@@ -100,14 +108,10 @@ export default{
                 content: this.content,
                 urlmedia: this.urlmedia ,
             }).then(function(){
-                self.$router.push("/messages");
+                self.$router.push("/");
             }).catch(function(err){
                 console.log(err);
             })
-        },
-        deconnexion:function(){
-            this.$store.commit('deconnexion');
-            this.$router.push('/');
         },
         switchEmoji:function(){
             this.mode='EMOJIS';
@@ -275,6 +279,19 @@ margin-right: 5%;
     border-radius: 5px;
     padding: 1px 2px;
 }
+#preview{
+    margin-left: 25%;
+}
+#preview p{
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+#preview span{
+    padding: 0;
+}
+#preview img{
+    width: 200px;
+}
 
 #btn_createMess{
   margin: 50px auto 30px auto;
@@ -343,6 +360,55 @@ margin-right: 5%;
     border: solid 1px #fd2d01;
     border-radius: 5px;
 }
+@media (max-width: 900px)
+{
+    #createMess input,
+    #createMess textarea{
+        width: 100%;
+    }
+    #urlmedia input{
+        margin-left: 0;
+    }
+    #createMess .emoji{
+        width: 100%;
+    }
+    #gif-search{
+        width: 100%;
+    }
+    #gif{
+        width: 120px;
+        height: 120px;
+    }
+}
 
-
+@media (max-width: 500px)
+{
+    #creationM{
+        padding: 5px;
+    }
+    #creationM h1{
+        font-size: 20px;
+        padding-top: 30px;
+    }
+    #createMess_head button{
+        margin: 30px 0 0 0;
+    }
+    #createMess input,
+    #createMess textarea{
+        width: 100%;
+    }
+    #urlmedia input{
+        margin-left: 0;
+    }
+    #createMess .emoji{
+        width: 100%;
+    }
+    #gif-search{
+        width: 100%;
+    }
+    #gif{
+        width: 90px;
+        height: 90px;
+    }
+}
 </style>

@@ -13,14 +13,12 @@
           // Getting auth header
           const headerAuth = req.headers['authorization']; //vérification du token
           const userId = jwtUtils.getUserId(headerAuth); //vérification du userId correspondant au pass avec le userData
-          let monImage = "";
 
-          if (req.file) { monImage = `${req.protocol}://${req.get("host")}/images/${req.file.filename}` }
           // Params
           const message = { // On créé un objet message
               title: req.body.title,
               content: req.body.content,
-              urlmedia: req.body.urlmedia || monImage, //`${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+              urlmedia: req.body.urlmedia,
               UserId: userId
           };
 

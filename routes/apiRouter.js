@@ -17,11 +17,11 @@ router.put('/users/me/', multer, usersCtrl.updateUserProfile);
 router.delete('/users/me/delete/', usersCtrl.deleteProfil);
 
 //Messages routes
-router.post('/message/new/', multer, messagesCtrl.createMessage);
+router.post('/message/new/', messagesCtrl.createMessage);
 router.get('/messages/', messagesCtrl.listMessages);
 router.get('/message/:id', messagesCtrl.oneMessage);
 router.delete('/message/delete/:id', messagesCtrl.deleteMessage);
-router.put('/message/modif/:id', multer, messagesCtrl.updateMessage);
+router.put('/message/modif/:id', messagesCtrl.updateMessage);
 
 //Likes routes
 router.post('/message/:id/like', likesCtrl.Like);

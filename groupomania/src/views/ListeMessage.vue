@@ -20,7 +20,7 @@
                         <!-- TITRE DU MESSAGE --> 
                         <span class="title"><p>{{message.title}}</p></span>  
                         <!-- MEDIA DU MESSAGE --> 
-                        <span v-if="message.urlmedia !== null" class="urlImg">
+                        <span v-if="message.urlmedia !== ''" class="urlImg">
                             <img v-bind:src="message.urlmedia">
                         </span> 
                         <!-- CORPS DU MESSAGE --> 
@@ -28,7 +28,7 @@
                     </div>  
                     <div id="control"> 
                         <span @click="getUpOneMessage(message.id)" class="modif" v-if="user.id == message.UserId || user.isAdmin == 1"><i class="far fa-edit"></i></span> 
-                        <span @click="like(message.id)" class="like"><i class="far fa-thumbs-up"></i> <p>{{message.likes}}</p></span> 
+                        <span @click="like(message.id)" class="like"><i class="far fa-heart"></i><p>{{message.likes}}</p></span> 
                         <span class="delete" v-if="user.id == message.UserId || user.isAdmin == 1" @click="deleteMessage(message.id)"><i class="far fa-trash-alt"></i></span> 
                     </div>
                 </li>
@@ -51,7 +51,7 @@ export default{
         },
          mounted: function(){
             if(this.$store.state.user.userId == -1){
-                this.$router.push('/');
+                this.$router.push('/auth');
                 return;
             }            
             this.$store.dispatch('getListeMessage');
@@ -60,6 +60,7 @@ export default{
             ...mapState({
                 user:'userInfos',
                 messages:'listeMessage',
+                Likes:'Likes'
             }),
         },
         methods:{
@@ -69,34 +70,16 @@ export default{
         getUpOneMessage(id){
             this.$router.push(`/message/modif/${id}`);
             },
-        update: function () {
-        const self = this;
-        this.$store
-            .dispatch("updateMessage", {
-                title: this.title,
-                content: this.content,
-                urlmedia: this.file,
-            }).then(function(){
-                self.switchLISTEMESSAGE();
-            }).catch(function(err){
-                console.log(err);
-            });
-        },
         deleteMessage:function(id){
             if(confirm('Voulez-vous vraiment supprimer le message?')){
                 this.$store.dispatch('deleteMessage',id);
-                this.$router.push('/messages');
+                this.$router.push('/');
             }
         },
         like: function(id){
             console.log('like');
             this.$store.dispatch('like',id);
-            
         },
-        deconnexion:function(){
-            this.$store.commit('deconnexion');
-            this.$router.push('/');
-        }
     }
 }
 </script>
@@ -104,16 +87,16 @@ export default{
 <style scoped>
 /* CSS LISTE MESSAGE */
 #listeMessage{
-    margin: 50px auto;
-    width: 90%;
-    padding: 30px;
+    color: #000;
     display: flex;
     flex-direction: column;
+    margin: 50px auto;
+    padding: 30px;
     font-size: 20px;
+    width: 90%;
+    border: 3px solid #fd2d01;
     border-radius: 5px;
     background-color: #fff;
-    border: 3px solid #fd2d01;
-    color: #000;
 }
 .photoP{
     width: 60px;
@@ -319,5 +302,35 @@ li p{
     margin: auto;
     box-sizing: border-box;
     box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+}
+@media (max-width: 500px)
+{
+    #listeMessage{
+        padding: 2%;
+    }
+    #listeMess li{
+        padding: 0;
+        margin: 10px 0;
+    }
+    li span{
+        flex-direction: column;
+        margin: 5px;
+    }
+    .auther{
+        margin-top: 5px;
+    }
+    .date{
+        margin: 5px 0 25px 5px;
+    }
+    li .urlImg{
+        border: none;
+        padding: 0 10px;
+    }
+    .urlImg img{
+        border-radius: 15px;
+    }
+    .like{
+        flex-direction: row;
+    }
 }
 </style>
