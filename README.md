@@ -4,5 +4,4 @@
 nodemon server
 
 ### Front ###
-cd groupomania
-npm run serve
+cd groupomania / npm run serve
